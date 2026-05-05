@@ -6,36 +6,33 @@ async function fetchAPI() {
 }
 
 /* ================= OVERVIEW CHART ================= */
-async function loadOverview() {
-  const data = await fetchAPI();
 
-  const totalFixtures = data.fixtures.length;
-  let completedMatches = 0;
+async function loadOverview() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+
+  let completed = 0;
+  let total = data.fixtures.length * 3;
 
   Object.values(data.results).forEach(r => {
     r.matches.forEach(m => {
-      if (m && m.sets) completedMatches++;
+      if (m && m.sets) completed++;
     });
   });
 
   document.getElementById("main-content").innerHTML = `
-    <h2>Overview</h2>
-    <canvas id="matchesChart"></canvas>
+    <h2>Match Progress</h2>
+    <canvas id="progressChart"></canvas>
   `;
 
-  new Chart(document.getElementById("matchesChart"), {
+  new Chart(document.getElementById("progressChart"), {
     type: "doughnut",
     data: {
-      labels: ["Completed Matches", "Pending Matches"],
+      labels: ["Completed", "Pending"],
       datasets: [{
-        data: [completedMatches, totalFixtures * 3 - completedMatches],
+        data: [completed, total - completed],
         backgroundColor: ["#2563EB", "#E5E7EB"]
       }]
-    },
-    options: {
-      plugins: {
-        legend: { position: "bottom" }
-      }
     }
   });
 }
