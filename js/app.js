@@ -103,3 +103,88 @@ function renderFixtures() {
     grid.appendChild(card);
   });
 }
+/*===========================Rendur result ==============================*/
+function renderResults() {
+  const container = document.getElementById("main-content");
+
+  // ✅ Preserve SPA behavior
+  container.innerHTML = `
+    <div class="filters">
+      <label><input type="checkbox" id="r1" checked> Round 1</label>
+      <label><input type="checkbox" id="r2" checked> Round 2</label>
+      <label><input type="checkbox" id="completed" checked> Completed</label>
+      <label><input type="checkbox" id="pending" checked> Pending</label>
+    </div>
+
+    <h2>Results</h2>
+    <div id="results-grid" class="fixtures-grid"></div>
+  `;
+
+  ["r1", "r2", "completed", "pending"].forEach(id => {
+    document.getElementById(id).addEventListener("change", renderResults);
+  });
+
+  const grid = document.getElementById("results-grid");
+
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  const showR1 = document.getElementById("r1").checked;
+  const showR2 = document.getElementById("r2").checked;
+  const showCompleted = document.getElementById("completed").checked;
+  const showPending = document.getElementById("pending").checked;
+
+  fixtures.forEach(f => {
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
+    const res = results[f.tie_id];
+    if (!res) return;
+
+    const doneCount = res.matches.filter(m => m.sets).length;
+
+    if ((doneCount === 3 && !showCompleted) || (doneCount < 3 && !showPending)) return;
+
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    card.innerHTML = `
+      <div class="fixture-header">
+        Round ${f.round_no} · ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+      </div>
+    `;
+
+    res.matches.forEach((m, idx) => {
+      if (!m.sets) {
+        card.innerHTML += `
+          <div class="match pending">
+            <strong>M${idx + 1}</strong> ⏳ Pending
+          </div>
+        `;
+        return;
+      }
+
+      let aSets = 0;
+      let bSets = 0;
+
+      m.sets.forEach(s => {
+        if (s[0] > s[1]) aSets++;
+        else bSets++;
+      });
+
+      const winner =
+        aSets > bSets ? f.matches[idx][0] : f.matches[idx][1];
+
+      const scoreLine = m.sets.map(s => `${s[0]}–${s[1]}`).join(" | ");
+
+      card.innerHTML += `
+        <div class="match done">
+          <strong>M${idx + 1}</strong> ✅
+          <span class="winner">${winner}</span>
+          <div class="result-score">${scoreLine}</div>
+        </div>
+      `;
+    });
+
+    grid.appendChild(card);
+  });
+}
