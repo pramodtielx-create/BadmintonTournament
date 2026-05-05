@@ -22,57 +22,88 @@ function clearMain() {
  *************************************************/
 async function loadFixtures() {
   const container = document.getElementById("main-content");
-  clearMain();
-
-  const title = document.createElement("h2");
-  title.textContent = "Fixtures";
-  container.appendChild(title);
+  container.innerHTML = "";
 
   const data = await fetchAPI();
   const fixtures = data.fixtures;
+  const results = data.results;
 
-  // Group by round
-  const rounds = {};
-  fixtures.forEach(f => {
-    if (!rounds[f.round_no]) rounds[f.round_no] = [];
-    rounds[f.round_no].push(f);
+  /* ---------- FILTER BAR ---------- */
+  container.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="filters">
+      <label><input type="checkbox" checked> Round 1</label>
+      <label><input type="checkbox" checked> Round 2</label>
+      <label><input type="checkbox"> Completed</label>
+      <label><input type="checkbox" checked> Pending</label>
+    </div>
+    `
+  );
+
+  /* ---------- SUMMARY ---------- */
+  let completedMatches = 0;
+  let totalMatches = fixtures.length * 3;
+
+  Object.values(results).forEach(r =>
+    r.matches.forEach(m => m.sets && completedMatches++)
+  );
+
+  container.insertAdjacentHTML(
+    "beforeend",
+    `
+    <div class="summary">
+      📊 <strong>Fixtures Summary:</strong> ${completedMatches} / ${totalMatches} matches completed
+    </div>
+    `
+  );
+
+  /* ---------- GRID ---------- */
+  const grid = document.createElement("div");
+  grid.className = "fixtures-grid";
+
+  fixtures.forEach(fixture => {
+    const res = results[fixture.tie_id];
+    const completed = res
+      ? res.matches.filter(m => m.sets).length
+      : 0;
+
+    const percent = Math.round((completed / 3) * 100);
+
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    card.innerHTML = `
+      <div class="fixture-header">
+        ${fixture.team_a} <span class="vs">vs</span> ${fixture.team_b}
+      </div>
+      <div class="fixture-sub">${completed} / 3 matches completed</div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
+
+      ${fixture.matches
+        .map((m, i) => {
+          const done = res && res.matches[i] && res.matches[i].sets;
+          return `
+            <div class="match">
+              <strong>M${i + 1}</strong>
+              <span class="${done ? "badge-done" : "badge-pending"}">
+                ${done ? "✅" : "⏳"}
+              </span>
+              ${m[0]} <span class="vs">vs</span> ${m[1]}
+            </div>
+          `;
+        })
+        .join("")}
+    `;
+
+    grid.appendChild(card);
   });
 
-  Object.keys(rounds)
-    .sort((a, b) => a - b)
-    .forEach(roundNo => {
-      const roundHeader = document.createElement("h3");
-      roundHeader.textContent = `Round ${roundNo}`;
-      container.appendChild(roundHeader);
-
-      rounds[roundNo].forEach(fixture => {
-        const card = document.createElement("div");
-        card.className = "fixture-card";
-
-        card.innerHTML = `
-          <div class="fixture-title">
-            <strong>${fixture.team_a}</strong>
-            <span class="vs">vs</span>
-            <strong>${fixture.team_b}</strong>
-          </div>
-          <ul class="fixture-matches">
-            ${fixture.matches
-              .map(
-                (m, i) => `
-                <li>
-                  <strong>Match ${i + 1}:</strong>
-                  ${m[0]} <span class="vs">vs</span> ${m[1]}
-                </li>`
-              )
-              .join("")}
-          </ul>
-        `;
-
-        container.appendChild(card);
-      });
-    });
+  container.appendChild(grid);
 }
-
 /*************************************************
  * STUBS (so buttons never break)
  *************************************************/
