@@ -1,57 +1,15 @@
-function loadContent(section) {
-  const content = document.getElementById("main-content");
+const API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
 
-  switch (section) {
-    case "overview":
-      content.innerHTML = "<h2>Overview</h2><p>Tournament summary.</p>";
-      break;
+async function loadAPI() {
+  const res = await fetch(API_URL);
+  return await res.json();
+}
 
-    case "fixtures":
-      content.innerHTML = `
-        <h2>Fixtures</h2>
-        <ul>
-          <li>Match 1: Player A vs Player B</li>
-          <li>Match 2: Player C vs Player D</li>
-        </ul>`;
-      break;
-
-    case "results":
-      content.innerHTML = "<h2>Results</h2><p>Match results.</p>";
-      break;
-
-    case "standings":
-      content.innerHTML = "<h2>Standings</h2><p>Points table.</p>";
-      break;
-
-   case "insights":
-  content.innerHTML = `
-    <h2>Insights</h2>
-    <iframe 
-      src="https://mathigangbhl.streamlit.app/"
-      style="width:100%; height:85vh; border:none; border-radius:8px;"
-      loading="lazy">
-    </iframe>
+async function loadOverview() {
+  const data = await loadAPI();
+  document.getElementById("main-content").innerHTML = `
+    <h2>Overview</h2>
+    <p>Teams: ${new Set(data.fixtures.map(f => f.team_a)).size}</p>
+    <p>Total Fixtures: ${data.fixtures.length}</p>
   `;
-  break;
-  }
-
-  setActive(section);
 }
-
-function setActive(section) {
-  document.querySelectorAll(".sidebar button").forEach(btn => {
-    btn.classList.remove("active");
-    if (btn.innerText.toLowerCase() === section) {
-      btn.classList.add("active");
-    }
-  });
-}
-function openInsights() {
-  window.open(
-    "https://mathigangbhl.streamlit.app/",
-    "_blank",
-    "noopener,noreferrer"
-  );
-}
-// Load default
-loadContent("overview");
