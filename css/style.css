@@ -1,4 +1,3 @@
-
 * {
   margin: 0;
   padding: 0;
@@ -51,7 +50,6 @@ body {
   border-radius: 8px;
   cursor: pointer;
   text-align: left;
-  font-size: 14px;
 }
 
 .sidebar button:hover,
@@ -64,9 +62,4 @@ body {
   flex: 1;
   padding: 30px;
   background-color: #eef2f7;
-  overflow-y: auto;
-}
-
-.content h2 {
-  margin-bottom: 15px;
 }
