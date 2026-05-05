@@ -155,48 +155,71 @@ document.addEventListener("DOMContentLoaded", () => {
   loadOverview();
 });
 /*************************************************
- * FIXTURES
+ * FIXTURES – ROUND 1 & ROUND 2
  *************************************************/
 async function loadFixtures() {
-  document.getElementById("main-content").innerHTML =
-    "<h2>Loading fixtures…</h2>";
+  const container = document.getElementById("main-content");
+  container.innerHTML = "<h2>Loading fixtures…</h2>";
 
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
     const fixtures = data.fixtures;
 
-    let html = "<h2>Fixtures</h2>";
+    if (!fixtures || fixtures.length === 0) {
+      container.innerHTML = "<p>No fixtures available.</p>";
+      return;
+    }
 
+    // ✅ Group fixtures by round
+    const rounds = {};
     fixtures.forEach(f => {
-      html += `
-        <div class="fixture-card">
-          <h3>Round ${f.round_no}</h3>
-          <p><strong>${f.team_a}</strong> vs <strong>${f.team_b}</strong></p>
-          <ul>
-      `;
-
-      f.matches.forEach((m, idx) => {
-        html += `
-          <li>
-            <strong>Match ${idx + 1}:</strong>
-            ${m[0]} <span style="color:#f97316;">vs</span> ${m[1]}
-          </li>
-        `;
-      });
-
-      html += `
-          </ul>
-        </div>
-        <hr>
-      `;
+      if (!rounds[f.round_no]) {
+        rounds[f.round_no] = [];
+      }
+      rounds[f.round_no].push(f);
     });
 
-    document.getElementById("main-content").innerHTML = html;
+    let html = "<h2>Fixtures</h2>";
+
+    Object.keys(rounds)
+      .sort((a, b) => a - b)
+      .forEach(roundNo => {
+        html += `<h3>Round ${roundNo}</h3>`;
+
+        rounds[roundNo].forEach(f => {
+          html += `
+            <div class="fixture-card">
+              <div class="fixture-title">
+                <strong>${f.team_a}</strong>
+                <span class="vs">vs</span>
+                <strong>${f.team_b}</strong>
+              </div>
+
+              <ul class="fixture-matches">
+          `;
+
+          f.matches.forEach((m, idx) => {
+            html += `
+              <li>
+                <strong>Match ${idx + 1}:</strong>
+                ${m[0]} <span class="vs">vs</span> ${m[1]}
+              </li>
+            `;
+          });
+
+          html += `
+              </ul>
+            </div>
+          `;
+        });
+      });
+
+    container.innerHTML = html;
 
   } catch (err) {
-    document.getElementById("main-content").innerHTML =
-      "<p style='color:red'>Failed to load fixtures.</p>";
     console.error(err);
+    container.innerHTML =
+      "<p style='color:red'>Failed to load fixtures.</p>";
   }
 }
