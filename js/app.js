@@ -159,67 +159,66 @@ document.addEventListener("DOMContentLoaded", () => {
  *************************************************/
 async function loadFixtures() {
   const container = document.getElementById("main-content");
-  container.innerHTML = "<h2>Loading fixtures…</h2>";
 
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    const fixtures = data.fixtures;
+  // Clear content first
+  container.innerHTML = "<h2>Fixtures</h2>";
 
-    if (!fixtures || fixtures.length === 0) {
-      container.innerHTML = "<p>No fixtures available.</p>";
-      return;
+  const res = await fetch(API_URL, { cache: "no-store" });
+  const data = await res.json();
+
+  const fixtures = data.fixtures;
+
+  // ✅ EXPLICIT round grouping
+  const rounds = {};
+  fixtures.forEach(fixture => {
+    const round = fixture.round_no;
+    if (!rounds[round]) {
+      rounds[round] = [];
     }
+    rounds[round].push(fixture);
+  });
 
-    // ✅ Group fixtures by round
-    const rounds = {};
-    fixtures.forEach(f => {
-      if (!rounds[f.round_no]) {
-        rounds[f.round_no] = [];
-      }
-      rounds[f.round_no].push(f);
-    });
+  // ✅ EXPLICIT rendering order
+  Object.keys(rounds)
+    .sort((a, b) => Number(a) - Number(b))
+    .forEach(roundNo => {
 
-    let html = "<h2>Fixtures</h2>";
+      // ---- Round Heading ----
+      const roundHeader = document.createElement("h3");
+      roundHeader.textContent = `Round ${roundNo}`;
+      container.appendChild(roundHeader);
 
-    Object.keys(rounds)
-      .sort((a, b) => a - b)
-      .forEach(roundNo => {
-        html += `<h3>Round ${roundNo}</h3>`;
+      // ---- Fixtures in this round ----
+      rounds[roundNo].forEach(fixture => {
 
-        rounds[roundNo].forEach(f => {
-          html += `
-            <div class="fixture-card">
-              <div class="fixture-title">
-                <strong>${f.team_a}</strong>
-                <span class="vs">vs</span>
-                <strong>${f.team_b}</strong>
-              </div>
+        const card = document.createElement("div");
+        card.className = "fixture-card";
 
-              <ul class="fixture-matches">
+        // Title
+        const title = document.createElement("div");
+        title.className = "fixture-title";
+        title.innerHTML = `
+          <strong>${fixture.team_a}</strong>
+          <span class="vs">vs</span>
+          <strong>${fixture.team_b}</strong>
+        `;
+        card.appendChild(title);
+
+        // Matches list
+        const ul = document.createElement("ul");
+        ul.className = "fixture-matches";
+
+        fixture.matches.forEach((match, index) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>Match ${index + 1}:</strong>
+            ${match[0]} <span class="vs">vs</span> ${match[1]}
           `;
-
-          f.matches.forEach((m, idx) => {
-            html += `
-              <li>
-                <strong>Match ${idx + 1}:</strong>
-                ${m[0]} <span class="vs">vs</span> ${m[1]}
-              </li>
-            `;
-          });
-
-          html += `
-              </ul>
-            </div>
-          `;
+          ul.appendChild(li);
         });
+
+        card.appendChild(ul);
+        container.appendChild(card);
       });
-
-    container.innerHTML = html;
-
-  } catch (err) {
-    console.error(err);
-    container.innerHTML =
-      "<p style='color:red'>Failed to load fixtures.</p>";
-  }
+    });
 }
