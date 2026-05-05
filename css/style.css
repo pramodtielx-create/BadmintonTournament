@@ -143,3 +143,21 @@ body {
   font-weight: 700;
   color: #f59e0b;
 }
+/* ===== RESULTS SPECIFIC ===== */
+.result-score {
+  font-size: 13px;
+  color: #374151;
+  margin-left: 26px;
+}
+
+.match.done {
+  color: #16a34a;
+}
+
+.match.pending {
+  color: #f59e0b;
+}
+
+.winner {
+  font-weight: 600;
+}
