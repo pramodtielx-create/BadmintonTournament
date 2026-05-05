@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Badminton Tournament Intelligence</title>
+
+  <!-- ✅ CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
@@ -12,27 +14,28 @@
     <h1>🏸 <span>Badminton</span> Tournament Intelligence</h1>
   </header>
 
-  <!-- Layout -->
+  <!-- Main Layout -->
   <div class="container">
 
     <!-- Sidebar -->
-    <nav class="sidebar">
+    <aside class="sidebar">
       <h3>TOURNAMENT</h3>
       <button onclick="loadContent('overview')">Overview</button>
       <button onclick="loadContent('fixtures')">Fixtures</button>
       <button onclick="loadContent('results')">Results</button>
       <button onclick="loadContent('standings')">Standings</button>
-      <button onclick="loadContent('insights')" class="active">Insights</button>
-    </nav>
+      <button onclick="loadContent('insights')">Insights</button>
+    </aside>
 
     <!-- Main Content -->
     <main id="main-content" class="content">
-      <h2>Insights</h2>
+      <h2>Welcome</h2>
       <p>Select a section from the left menu.</p>
     </main>
 
   </div>
 
+  <!-- ✅ JavaScript -->
   <script src="js/app.js"></script>
 </body>
 </html>
