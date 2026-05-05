@@ -1,5 +1,5 @@
 /*************************************************
- * GLOBAL BASE
+ * RESET
  *************************************************/
 * {
   margin: 0;
@@ -8,10 +8,14 @@
   font-family: "Segoe UI", Arial, sans-serif;
 }
 
+/*************************************************
+ * BODY
+ *************************************************/
 body {
   background-color: #f4f6f9;
   height: 100vh;
-  /* ✅ IMPORTANT: allow internal scrolling */
+
+  /* ✅ DO NOT CLIP PAGE */
   overflow: hidden;
 }
 
@@ -24,12 +28,18 @@ body {
   padding: 18px 28px;
 }
 
+.header span {
+  color: orange;
+}
+
 /*************************************************
  * LAYOUT
  *************************************************/
 .container {
   display: flex;
-  height: calc(100vh - 72px); /* header height */
+
+  /* ✅ THIS DEFINES VIEWPORT BELOW HEADER */
+  height: calc(100vh - 72px);
 }
 
 /*************************************************
@@ -53,11 +63,12 @@ body {
   width: 100%;
   padding: 12px;
   margin-bottom: 10px;
-  border-radius: 8px;
   background: #1c2541;
   border: none;
   color: white;
+  border-radius: 8px;
   cursor: pointer;
+  text-align: left;
 }
 
 .sidebar button:hover {
@@ -65,21 +76,22 @@ body {
 }
 
 /*************************************************
- * ✅ CONTENT — THIS IS THE CRITICAL FIX
+ * ✅ CONTENT — THIS IS THE KEY FIX
  *************************************************/
 .content {
   flex: 1;
   padding: 30px;
   background-color: #eef2f7;
 
-  /* ✅ ONLY THIS DOES SCROLLING */
-  overflow-y: scroll;
+  /* ✅ THIS ENABLES SCROLL */
+  overflow-y: auto;
 
-  /* ❌ DO NOT SET max-height OR height HERE */
+  /* ✅ TAKE FULL AVAILABLE HEIGHT */
+  height: 100%;
 }
 
 /*************************************************
- * FIXTURE STYLES
+ * FIXTURES
  *************************************************/
 .fixture-card {
   background: #ffffff;
@@ -90,6 +102,7 @@ body {
 }
 
 .fixture-title {
+  font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
 }
