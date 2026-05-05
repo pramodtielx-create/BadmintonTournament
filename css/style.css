@@ -63,3 +63,24 @@ body {
   padding: 30px;
   background-color: #eef2f7;
 }
+
+.fixture-card {
+  background: #ffffff;
+  padding: 12px;  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.fixture-card h3 {
+  margin-bottom: 6px;
+  color: #2563eb;
+}
+
+.fixture-card ul {
+  margin-top: 10px;
+  padding-left: 18px;
+}
+
+.fixture-card li {
+  margin-bottom: 6px;
+}
