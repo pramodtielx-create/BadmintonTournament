@@ -1,61 +1,44 @@
-/*************************************************
- * RESET
- *************************************************/
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: Segoe UI, Arial, sans-serif;
 }
 
-/*************************************************
- * BODY
- *************************************************/
+/* BODY */
 body {
-  background-color: #f4f6f9;
-  height: 100vh;
-
-  /* ✅ DO NOT CLIP PAGE */
-  overflow: hidden;
+  background: #f4f6f9;
 }
 
-/*************************************************
- * HEADER
- *************************************************/
+/* HEADER */
 .header {
   background: linear-gradient(90deg, #000428, #004e92);
-  color: white;
   padding: 18px 28px;
+  color: white;
 }
 
 .header span {
   color: orange;
 }
 
-/*************************************************
- * LAYOUT
- *************************************************/
+/* LAYOUT */
 .container {
   display: flex;
-
-  /* ✅ THIS DEFINES VIEWPORT BELOW HEADER */
   height: calc(100vh - 72px);
 }
 
-/*************************************************
- * SIDEBAR
- *************************************************/
+/* SIDEBAR */
 .sidebar {
   width: 240px;
-  background-color: #0b132b;
+  background: #0b132b;
   padding: 20px;
   color: white;
-  flex-shrink: 0;
 }
 
 .sidebar h3 {
-  font-size: 13px;
   margin-bottom: 20px;
+  font-size: 13px;
   opacity: 0.7;
 }
 
@@ -75,30 +58,21 @@ body {
   background: #3a86ff;
 }
 
-/*************************************************
- * ✅ CONTENT — THIS IS THE KEY FIX
- *************************************************/
+/* CONTENT */
 .content {
   flex: 1;
   padding: 30px;
-  background-color: #eef2f7;
-
-  /* ✅ THIS ENABLES SCROLL */
-  overflow-y: auto;
-
-  /* ✅ TAKE FULL AVAILABLE HEIGHT */
-  height: 100%;
+  background: #eef2f7;
+  overflow-y: auto; /* ✅ THIS IS CRITICAL */
 }
 
-/*************************************************
- * FIXTURES
- *************************************************/
+/* FIXTURES */
 .fixture-card {
   background: #ffffff;
   padding: 16px 18px;
   margin-bottom: 18px;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .fixture-title {
@@ -117,18 +91,17 @@ body {
 
 .vs {
   color: #f97316;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 6px;
 }
 
-/* ✅ FIX: FORCE FIXTURE STACKING */
-#main-content {
-  display: block !important;
+/* HEADINGS */
+h2 {
+  margin-bottom: 16px;
 }
 
-.fixture-card {
-  position: relative !important;   /* override absolute/grid */
-  display: block !important;
-  width: 100% !important;
-  clear: both !important;
+h3 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: #2563eb;
 }
