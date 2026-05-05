@@ -2,7 +2,7 @@
  * CONFIG
  *************************************************/
 const API_URL =
-  "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTXMoAwXbvDwO7qlKlhZdQIDF1xO7udrCnDuCC7kweDOElvkc5ep9-8V42WmhZBCvBv7i5PBwEzOZXtknmLBwiz1ZGVO1DLdaJBvgpFtQSDTO1MbqsG4HFZ252eAuNNSfS0CLR7fHq36H7fQ5-kkgF46vCZFBeyecLwLpUdX2TsTisuCPIhwGNDbklhTxQWNXhdSWgD853n_QO8HAFt2H8fBqJ9SIfZOJilrAdcE3NJ0d7k-bwTY7Z3DkzOW2UZ8o9cso-onO8LzLh1xUHwpm0GMU1b4Q&lib=MnlW5-0CjeWiL0y3FATjIigWVRn-u2K4R";
+  "https://script.google.com/macros/s/AKfycbwxDaxyf_2LfCldvKk5Ci3WrP-2_yPURXhq-zVK9eXm1kdl-oA7PX2We1sNNom0avi_sw/exec";
 
 /*************************************************
  * COMMON HELPERS
