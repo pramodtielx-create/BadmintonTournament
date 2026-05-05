@@ -2,7 +2,7 @@
  * CONFIG
  *************************************************/
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwxDaxyf_2LfCldvKk5Ci3WrP-2_yPURXhq-zVK9eXm1kdl-oA7PX2We1sNNom0avi_sw/exec";
+  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
 
 /*************************************************
  * COMMON HELPERS
