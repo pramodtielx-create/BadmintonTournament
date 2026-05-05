@@ -3,10 +3,7 @@ function loadContent(section) {
 
   switch (section) {
     case "overview":
-      content.innerHTML = `
-        <h2>Overview</h2>
-        <p>Tournament summary, schedule, and key highlights.</p>
-      `;
+      content.innerHTML = "<h2>Overview</h2><p>Tournament summary.</p>";
       break;
 
     case "fixtures":
@@ -15,29 +12,19 @@ function loadContent(section) {
         <ul>
           <li>Match 1: Player A vs Player B</li>
           <li>Match 2: Player C vs Player D</li>
-        </ul>
-      `;
+        </ul>`;
       break;
 
     case "results":
-      content.innerHTML = `
-        <h2>Results</h2>
-        <p>Completed match results and scores.</p>
-      `;
+      content.innerHTML = "<h2>Results</h2><p>Match results.</p>";
       break;
 
     case "standings":
-      content.innerHTML = `
-        <h2>Standings</h2>
-        <p>Points table and rankings.</p>
-      `;
+      content.innerHTML = "<h2>Standings</h2><p>Points table.</p>";
       break;
 
     case "insights":
-      content.innerHTML = `
-        <h2>Insights</h2>
-        <p>Analytics, trends, and performance insights.</p>
-      `;
+      content.innerHTML = "<h2>Insights</h2><p>Analytics and trends.</p>";
       break;
   }
 
@@ -53,5 +40,5 @@ function setActive(section) {
   });
 }
 
-/* Load default page */
+// Load default
 loadContent("overview");
