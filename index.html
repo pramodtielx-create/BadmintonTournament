@@ -4,31 +4,36 @@
   <meta charset="UTF-8" />
   <title>Badminton Tournament Intelligence</title>
 
+  <!-- ===== CSS ===== -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- ===== Chart.js ===== -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-  <!-- Header -->
+  <!-- ================= HEADER ================= -->
   <header class="header">
     <h1>🏸 <span>Badminton</span> Tournament Intelligence</h1>
   </header>
 
-  <!-- Layout -->
+  <!-- ================= MAIN LAYOUT ================= -->
   <div class="container">
 
-    <!-- Sidebar -->
+    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
       <h3>TOURNAMENT</h3>
-      <button onclick="loadContent('overview')">Overview</button>
-      <button onclick="loadContent('fixtures')">Fixtures</button>
-      <button onclick="loadContent('results')">Results</button>
-      <button onclick="loadContent('standings')">Standings</button>
+
+      <!-- ✅ DIRECT CHART CALL -->
+      <button onclick="loadOverview()">Overview</button>
+
+      <button onclick="loadTeamChart()">Team Performance</button>
+
       <button onclick="openInsights()">Insights</button>
     </aside>
 
-    <!-- Main Content -->
+    <!-- ================= CONTENT ================= -->
     <main id="main-content" class="content">
       <h2>Welcome</h2>
       <p>Select a section from the left menu.</p>
@@ -36,7 +41,8 @@
 
   </div>
 
-<script src="js/app.js"></script>
+  <!-- ================= APP JS ================= -->
+  <script src="js/app.js"></script>
 
 </body>
 </html>
