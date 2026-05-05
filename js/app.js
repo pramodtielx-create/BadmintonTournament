@@ -154,3 +154,49 @@ function openInsights() {
 document.addEventListener("DOMContentLoaded", () => {
   loadOverview();
 });
+/*************************************************
+ * FIXTURES
+ *************************************************/
+async function loadFixtures() {
+  document.getElementById("main-content").innerHTML =
+    "<h2>Loading fixtures…</h2>";
+
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    const fixtures = data.fixtures;
+
+    let html = "<h2>Fixtures</h2>";
+
+    fixtures.forEach(f => {
+      html += `
+        <div class="fixture-card">
+          <h3>Round ${f.round_no}</h3>
+          <p><strong>${f.team_a}</strong> vs <strong>${f.team_b}</strong></p>
+          <ul>
+      `;
+
+      f.matches.forEach((m, idx) => {
+        html += `
+          <li>
+            <strong>Match ${idx + 1}:</strong>
+            ${m[0]} <span style="color:#f97316;">vs</span> ${m[1]}
+          </li>
+        `;
+      });
+
+      html += `
+          </ul>
+        </div>
+        <hr>
+      `;
+    });
+
+    document.getElementById("main-content").innerHTML = html;
+
+  } catch (err) {
+    document.getElementById("main-content").innerHTML =
+      "<p style='color:red'>Failed to load fixtures.</p>";
+    console.error(err);
+  }
+}
