@@ -52,3 +52,6 @@ function setActive(section) {
     }
   });
 }
+
+/* Load default page */
+loadContent("overview");
