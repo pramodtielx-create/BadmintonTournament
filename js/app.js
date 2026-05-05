@@ -46,6 +46,12 @@ function setActive(section) {
     }
   });
 }
-
+function openInsights() {
+  window.open(
+    "https://mathigangbhl.streamlit.app/",
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
 // Load default
 loadContent("overview");
