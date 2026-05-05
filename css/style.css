@@ -120,3 +120,15 @@ body {
   font-weight: 600;
   margin: 0 6px;
 }
+
+/* ✅ FIX: FORCE FIXTURE STACKING */
+#main-content {
+  display: block !important;
+}
+
+.fixture-card {
+  position: relative !important;   /* override absolute/grid */
+  display: block !important;
+  width: 100% !important;
+  clear: both !important;
+}
