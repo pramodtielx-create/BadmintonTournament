@@ -23,9 +23,16 @@ function loadContent(section) {
       content.innerHTML = "<h2>Standings</h2><p>Points table.</p>";
       break;
 
-    case "insights":
-      content.innerHTML = "<h2>Insights</h2><p>Analytics and trends.</p>";
-      break;
+   case "insights":
+  content.innerHTML = `
+    <h2>Insights</h2>
+    <iframe 
+      src="https://mathigangbhl.streamlit.app/"
+      style="width:100%; height:85vh; border:none; border-radius:8px;"
+      loading="lazy">
+    </iframe>
+  `;
+  break;
   }
 
   setActive(section);
