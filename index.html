@@ -3,14 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Badminton Tournament Intelligence</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- Chart.js (MUST load before app.js) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
 <header class="header">
@@ -21,24 +15,13 @@
 
   <aside class="sidebar">
     <h3>TOURNAMENT</h3>
-
-    <!-- ✅ DIRECT FUNCTION CALLS -->
-    <button onclick="loadOverview()">Overview</button>
-    <button onclick="loadTeamChart()">Team Performance</button>
-    <button onclick="openInsights()">Insights</button>
     <button onclick="loadFixtures()">Fixtures</button>
-
   </aside>
 
-  <main id="main-content" class="content">
-    <h2>Dashboard</h2>
-    <p>Click a menu option</p>
-  </main>
+  <main id="main-content" class="content"></main>
 
 </div>
 
-<!-- ✅ app.js MUST be LAST -->
-<script src="js/app.js?v=20260505_1"></script>
-
+<script src="js/app.js?v=1"></script>
 </body>
 </html>
