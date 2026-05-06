@@ -146,52 +146,41 @@ function showResults() {
         <span class="vs">vs</span>
         <strong>${f.team_b}</strong>
       </div>
-
-      <div class="result-row header">
-        <div>M</div>
-        <div></div>
-        <div>Winner</div>
-        <div></div>
-        <div>Opponent</div>
-        <div>Score</div>
-      </div>
     `;
 
     f.matches.forEach((pair, idx) => {
       const matchRes = res && res.matches[idx];
 
-      /* ===== PENDING ===== */
+      /* ========= PENDING ========= */
       if (!matchRes || !matchRes.sets) {
         html += `
-          <div class="result-row pending">
-            <div class="col-match">M${idx + 1}</div>
-            <div class="col-status">⏳</div>
-            <div class="col-winner pending-text">Pending</div>
-            <div class="col-vs">vs</div>
-            <div class="col-opponent">${pair[0]} / ${pair[1]}</div>
-            <div class="col-score">—</div>
+          <div class="match pending">
+            <strong>M${idx + 1}</strong> ⏳ Pending
+            <div>${pair[0]}</div>
+            <div class="opponent">vs ${pair[1]}</div>
           </div>
         `;
         return;
       }
 
-      /* ===== COMPLETED ===== */
+      /* ========= COMPLETED ========= */
       let a = 0, b = 0;
       matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
 
       const winnerIndex = a > b ? 0 : 1;
       const winnerPair = pair[winnerIndex];
       const opponentPair = pair[winnerIndex === 0 ? 1 : 0];
-      const scoreLine = matchRes.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      const scoreLine = matchRes.sets
+        .map(s => `${s[0]}-${s[1]}`)
+        .join(" | ");
 
       html += `
-        <div class="result-row">
-          <div class="col-match">M${idx + 1}</div>
-          <div class="col-status">🏆</div>
-          <div class="col-winner">${winnerPair}</div>
-          <div class="col-vs">vs</div>
-          <div class="col-opponent">${opponentPair}</div>
-          <div class="col-score">${scoreLine}</div>
+        <div class="match done">
+          <strong>M${idx + 1}</strong>
+          <span class="winner">🏆 ${winnerPair}</span>
+          <div class="opponent">vs ${opponentPair}</div>
+          <div class="result-score">${scoreLine}</div>
         </div>
       `;
     });
@@ -200,7 +189,6 @@ function showResults() {
     grid.appendChild(card);
   });
 }
-
 /* ================= EXPOSE FUNCTIONS ================= */
 window.showFixtures = showFixtures;
 window.showResults = showResults;
