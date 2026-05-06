@@ -158,7 +158,10 @@ body {
   color: #f59e0b;
 }
 
-.winner {
+.winner .winner-team {
+  font-weight: 600;
+  color: #1f2937;
+}
   font-weight: 600;
 }
 select {
