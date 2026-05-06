@@ -157,9 +157,15 @@ function renderTeamView() {
   select.onchange = () => showTeamMatches(select.value);
 }
 
+
+/* ==================================showteam ================================*/
+
 function showTeamMatches(team) {
   const grid = document.getElementById("team-results");
   grid.innerHTML = "";
+
+  let totalCompleted = 0;
+  let totalPending = 0;
 
   dataCache.fixtures.forEach(f => {
     if (f.team_a !== team && f.team_b !== team) return;
@@ -170,11 +176,8 @@ function showTeamMatches(team) {
     const card = document.createElement("div");
     card.className = "fixture-card";
 
-    let html = `
-      <div class="fixture-header">
-        ${team} <span class="vs">vs</span> ${opponentTeam}
-      </div>
-    `;
+    let completedHTML = "";
+    let pendingHTML = "";
 
     f.matches.forEach((pair, idx) => {
       const isTeamA = f.team_a === team;
@@ -183,22 +186,22 @@ function showTeamMatches(team) {
 
       const matchRes = res && res.matches[idx];
 
+      // ===== PENDING MATCH =====
       if (!matchRes || !matchRes.sets) {
-        html += `
+        totalPending++;
+        pendingHTML += `
           <div class="match pending">
             <strong>M${idx + 1}</strong> ⏳
-            <div>
-              <span class="winner-team">${team}:</span> ${teamPair}
-            </div>
-            <div>
-              <span class="winner-team">${opponentTeam}:</span> ${opponentPair}
-            </div>
+            <div><b>${team}:</b> ${teamPair}</div>
+            <div><b>${opponentTeam}:</b> ${opponentPair}</div>
           </div>
         `;
         return;
       }
 
-      // ✅ Calculate winner
+      // ===== COMPLETED MATCH =====
+      totalCompleted++;
+
       let a = 0, b = 0;
       matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
       const teamWon = (isTeamA && a > b) || (!isTeamA && b > a);
@@ -207,28 +210,57 @@ function showTeamMatches(team) {
         .map(s => `${s[0]}-${s[1]}`)
         .join(" | ");
 
-      html += `
-        <div class="match ${teamWon ? "done" : "pending"}">
+      completedHTML += `
+        <div class="match done">
           <strong>M${idx + 1}</strong> ✅
           <div>
-            <span class="winner-team">${team}:</span>
-            <span class="${teamWon ? "winner" : ""}">
-              ${teamPair}
-            </span>
+            <b>${team}:</b>
+            <span class="${teamWon ? "winner" : ""}">${teamPair}</span>
           </div>
           <div>
-            <span class="winner-team">${opponentTeam}:</span>
-            ${opponentPair}
+            <b>${opponentTeam}:</b> ${opponentPair}
           </div>
           <div class="result-score">${scoreLine}</div>
         </div>
       `;
     });
 
-    card.innerHTML = html;
+    card.innerHTML = `
+      <div class="fixture-header">
+        ${team} <span class="vs">vs</span> ${opponentTeam}
+      </div>
+
+      ${
+        completedHTML
+          ? `<h4>✅ Completed Matches</h4>${completedHTML}`
+          : ""
+      }
+
+      ${
+        pendingHTML
+          ? `<h4>⏳ Pending Matches</h4>${pendingHTML}`
+          : ""
+      }
+    `;
+
     grid.appendChild(card);
   });
+
+  // ===== GLOBAL SUMMARY =====
+  const summary = document.createElement("div");
+  summary.className = "summary";
+  summary.innerHTML = `
+    🏆 <b>${team}</b> —
+    ✅ Completed: ${totalCompleted}
+    &nbsp;&nbsp;⏳ Pending: ${totalPending}
+  `;
+
+  grid.prepend(summary);
 }
+
+
+
+#########################################################
 function renderPlayerView() {
   const container = document.getElementById("main-content");
   container.innerHTML = `
