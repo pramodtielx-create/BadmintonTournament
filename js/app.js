@@ -123,9 +123,7 @@ function renderFixtures() {
 
 /* ================= RESULTS VIEW ================= */
 function showResults() {
-  const container = document.getElementById("main-content");
-
-  container.innerHTML = `
+  const containerHTML = `  const container = document.getElementById("main-content");
     <h2>Results</h2>
     <div id="results-grid" class="fixtures-grid"></div>
   `;
@@ -150,6 +148,57 @@ function showResults() {
 
     f.matches.forEach((pair, idx) => {
       const matchRes = res && res.matches[idx];
+
+      /* ================= PENDING ================= */
+      if (!matchRes || !matchRes.sets) {
+        html += `
+          <div class="match pending">
+            <strong>M${idx + 1}</strong> ⏳ Pending
+            <div>${pair[0]}</div>
+            <div class="opponent">vs ${pair[1]}</div>
+          </div>
+        `;
+        return;
+      }
+
+      /* ================= COMPLETED ================= */
+      let a = 0, b = 0;
+      matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+
+      const winnerIndex = a > b ? 0 : 1;
+      const winnerPair = pair[winnerIndex];
+      const loserPair = pair[winnerIndex === 0 ? 1 : 0];
+
+      const winnerTeam =
+        winnerIndex === 0 ? f.team_a : f.team_b;
+      const loserTeam =
+        winnerIndex === 0 ? f.team_b : f.team_a;
+
+      const scoreLine = matchRes.sets
+        .map(s => `${s[0]}-${s[1]}`)
+        .join(" | ");
+
+      html += `
+        <div class="match done">
+          <strong>M${idx + 1}</strong>
+          <div class="winner">
+            🏆 ${winnerPair} <span class="winner-team">(${winnerTeam})</span>
+          </div>
+          <div class="opponent">
+            vs ${loserPair} <span class="loser-team">(${loserTeam})</span>
+          </div>
+          <div class="result-score">${scoreLine}</div>
+        </div>
+      `;
+    });
+
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+}
+
+
+
 
       /* ================= PENDING ================= */
       if (!matchRes || !matchRes.sets) {
