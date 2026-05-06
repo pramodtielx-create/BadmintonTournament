@@ -398,5 +398,5 @@ window.renderTeamView = renderTeamView;
 window.renderPlayerView = renderPlayerView;
 
 
-let dataCache = null;
+
 
