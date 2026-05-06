@@ -1,106 +1,80 @@
-/* ===== RESET ===== */
-* {
+/* ================= RESET ================= *//* border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-/* ===== BODY ===== */
+/* ================= LAYOUT ================= */
 body {
   background: #f4f6f9;
   color: #1f2937;
 }
 
-/* ===== HEADER ===== */
-.header {
-  background: linear-gradient(90deg, #0f172a, #1e293b);
-  padding: 16px 28px;
-  color: white;
-}
-
-.header span {
-  color: #f59e0b;
-}
-
-/* ===== LAYOUT ===== */
 .container {
   display: flex;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 70px);
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  width: 250px;
-  padding: 20px;
-  background: #0b132b;
-  color: #e5e7eb;
-}
-
-.sidebar h3 {
-  font-size: 12px;
-  opacity: 0.6;
-  margin-bottom: 12px;
-}
-
-.sidebar button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #1c2541;
-  color: white;
-  cursor: pointer;
-}
-
-/* ===== CONTENT ===== */
 .content {
   flex: 1;
-  padding: 32px;
+  padding: 28px;
   overflow-y: auto;
 }
 
-/* ===== FILTERS ===== */
+/* ================= HEADERS ================= */
+h2 {
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+
+/* ================= FILTERS ================= */
 .filters {
   display: flex;
-  gap: 30px;
-  margin-bottom: 20px;
+  gap: 24px;
+  margin-bottom: 16px;
 }
 
 .filters label {
-  display: flex;
-  gap: 8px;
   font-size: 14px;
+  cursor: pointer;
 }
 
-/* ===== SUMMARY ===== */
+/* ================= SUMMARY ================= */
 .summary {
   background: #e8f1ff;
-  padding: 14px 18px;
-  border-radius: 14px;
-  margin-bottom: 24px;
-  color: #1e40af;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
   font-weight: 500;
+  color: #1e40af;
 }
 
-/* ===== FIXTURE GRID (3‑COLUMN SUPPORT) ===== */
+/* ================= GRID (3 COLUMNS) ================= */
 .fixtures-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 24px;
 }
 
-/* ===== CARD ===== */
+/* ================= CARD ================= */
 .fixture-card {
-  background: white;
-  padding: 20px;
+  background: #ffffff;
   border-radius: 18px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  padding: 18px 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
+/* ================= CARD HEADER ================= */
 .fixture-header {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.vs {
+  color: #f97316;
+  font-weight: 700;
+  margin: 0 6px;
 }
 
 .fixture-sub {
@@ -109,100 +83,15 @@ body {
   margin-bottom: 10px;
 }
 
-/* ===== PROGRESS ===== */
-.progress-bar {
-  height: 6px;
-  background: #e5e7eb;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  overflow: hidden;
-}
+/* ===================================================== */
+/* ================= RESULT ROW TABLE ================= */
+/* ===================================================== */
 
-.progress-fill {
-  height: 100%;
-  background: #2563eb;
-}
-
-/* ===== MATCHES ===== */
-.match {
-  display: flex;
-  gap: 8px;
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-.done {
-  color: #16a34a;
-}
-
-.pending {
-  color: #f59e0b;
-}
-
-.vs {
-  font-weight: 700;
-  color: #f59e0b;
-}
-/* ===== RESULTS SPECIFIC ===== */
-.result-score {
-  font-size: 13px;
-  color: #374151;
-  margin-left: 26px;
-}
-
-.match.done {
-  color: #16a34a;
-}
-
-.match.pending {
-  color: #f59e0b;
-}
-
-.winner .winner-team {
-  font-weight: 600;
-  color: #1f2937;
-}
-  font-weight: 600;
-}
-select {
-  padding: 10px 14px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-}
-h4 {
-  margin-top: 12px;
- : 14px;  margin-bottom: 6px;
-  color: #374151;
-}
-
-
-.winner {
-  color: #16a34a;
-  font-weight: 700;
-}
-
-.winner-team {
-  font-size: 12px;
-  color: #065f46;
-  margin-left: 6px;
-}
-
-.opponent {
-  margin-left: 22px;
-  font-size: 14px;
-  color: #374151;
-}
-
-.loser-team {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* ===== RESULTS ROW GRID ===== */
 .result-row {
   display: grid;
-  grid-template-columns: px;  grid-template-columns: 42px 36px 1.6fr 40px 1.6fr 1.2fr;
+  grid-template-columns: 42px 36px 1.6fr 40px 1.6fr 1.2fr;
+  align-items: center;
+  gap: 10px;
   padding: 6px 0;
   font-size: 14px;
   border-bottom: 1px solid #eef2f7;
@@ -212,7 +101,7 @@ h4 {
   border-bottom: none;
 }
 
-/* Columns */
+/* ----- Columns ----- */
 .col-match {
   font-weight: 700;
   color: #16a34a;
@@ -233,7 +122,7 @@ h4 {
 
 .col-vs {
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
   color: #f97316;
 }
 
@@ -243,7 +132,7 @@ h4 {
   color: #374151;
 }
 
-/* Pending */
+/* ================= STATES ================= */
 .result-row.pending {
   color: #f59e0b;
 }
@@ -251,4 +140,37 @@ h4 {
 .pending-text {
   font-weight: 600;
 }
-  align-items: center;
+
+/* Winner emphasis */
+.winner {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* Opponent text */
+.opponent {
+  color: #374151;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .fixtures-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-row {
+    grid-template-columns: 36px 28px 1fr;
+    grid-template-areas:
+      "m s w"
+      "m s o"
+      "m s c";
+  }
+
+  .col-match { grid-area: m; }
+  .col-status { grid-area: s; }
+  .col-winner { grid-area: w; }
+  .col-opponent { grid-area: o; }
+  .col-score { grid-area: c; text-align: left; }
+  .col-vs { display: none; }
+}
+* {
