@@ -142,32 +142,34 @@ function showResults() {
 
     let html = `
       <div class="fixture-header">
-        <strong>${f.team_a}</strong> <span class="vs">vs</span> <strong>${f.team_b}</strong>
+        <strong>${f.team_a}</strong>
+        <span class="vs">vs</span>
+        <strong>${f.team_b}</strong>
       </div>
     `;
 
     f.matches.forEach((pair, idx) => {
       const matchRes = res && res.matches[idx];
 
-      // ================= PENDING MATCH =================
+      // ================= PENDING =================
       if (!matchRes || !matchRes.sets) {
         html += `
           <div class="match pending">
             <strong>M${idx + 1}</strong> ⏳ Pending
             <div>${pair[0]}</div>
-            <div>${pair[1]}</div>
+            <div class="opponent">vs ${pair[1]}</div>
           </div>
         `;
         return;
       }
 
-      // ================= COMPLETED MATCH =================
+      // ================= COMPLETED =================
       let a = 0, b = 0;
       matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
 
       const winnerIndex = a > b ? 0 : 1;
       const winnerPair = pair[winnerIndex];
-      const loserPair = pair[winnerIndex === 0 ? 1 : 0];
+      const opponentPair = pair[winnerIndex === 0 ? 1 : 0];
 
       const scoreLine = matchRes.sets
         .map(s => `${s[0]}-${s[1]}`)
@@ -177,7 +179,7 @@ function showResults() {
         <div class="match done">
           <strong>M${idx + 1}</strong>
           <span class="winner">🏆 ${winnerPair}</span>
-          <div class="opponent">vs ${loserPair}</div>
+          <div class="opponent">vs ${opponentPair}</div>
           <div class="result-score">${scoreLine}</div>
         </div>
       `;
@@ -187,6 +189,7 @@ function showResults() {
     grid.appendChild(card);
   });
 }
+
 /* ================= EXPOSE FUNCTIONS ================= */
 window.showFixtures = showFixtures;
 window.showResults = showResults;
