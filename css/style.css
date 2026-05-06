@@ -161,3 +161,9 @@ body {
 .winner {
   font-weight: 600;
 }
+select {
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
