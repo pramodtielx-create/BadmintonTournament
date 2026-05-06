@@ -352,7 +352,7 @@ window.showFixtures = showFixtures;
 window.showResults = showResults;
 window.renderTeamView = renderTeamView;
 window.renderPlayerView = renderPlayerView;
-``
+
 
 let dataCache = null;
 
