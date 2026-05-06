@@ -160,41 +160,72 @@ function renderTeamView() {
 function showTeamMatches(team) {
   const grid = document.getElementById("team-results");
   grid.innerHTML = "";
-  if (!team) return;
 
   dataCache.fixtures.forEach(f => {
     if (f.team_a !== team && f.team_b !== team) return;
 
+    const opponentTeam = f.team_a === team ? f.team_b : f.team_a;
     const res = dataCache.results[f.tie_id];
+
     const card = document.createElement("div");
     card.className = "fixture-card";
 
-    let content = `
+    let html = `
       <div class="fixture-header">
-        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+        ${team} <span class="vs">vs</span> ${opponentTeam}
       </div>
     `;
 
     f.matches.forEach((pair, idx) => {
-      const matchRes = res && res.matches[idx];
-      if (!matchRes || !matchRes.sets) {
-        content += `<div class="match pending">M${idx + 1} ⏳ Pending</div>`;
-      } else {
-        let a = 0, b = 0;
-        matchRes.sets.forEach(s => s[0] > s[1] ? a++ : b++);
-        const winner = a > b ? pair[0] : pair[1];
-        const score = matchRes.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+      const isTeamA = f.team_a === team;
+      const teamPair = isTeamA ? pair[0] : pair[1];
+      const opponentPair = isTeamA ? pair[1] : pair[0];
 
-        content += `
-          <div class="match done">
-            M${idx + 1} ✅ Winner: ${winner}
-            <div class="result-score">${score}</div>
+      const matchRes = res && res.matches[idx];
+
+      if (!matchRes || !matchRes.sets) {
+        html += `
+          <div class="match pending">
+            <strong>M${idx + 1}</strong> ⏳
+            <div>
+              <span class="winner-team">${team}:</span> ${teamPair}
+            </div>
+            <div>
+              <span class="winner-team">${opponentTeam}:</span> ${opponentPair}
+            </div>
           </div>
         `;
+        return;
       }
+
+      // ✅ Calculate winner
+      let a = 0, b = 0;
+      matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const teamWon = (isTeamA && a > b) || (!isTeamA && b > a);
+
+      const scoreLine = matchRes.sets
+        .map(s => `${s[0]}-${s[1]}`)
+        .join(" | ");
+
+      html += `
+        <div class="match ${teamWon ? "done" : "pending"}">
+          <strong>M${idx + 1}</strong> ✅
+          <div>
+            <span class="winner-team">${team}:</span>
+            <span class="${teamWon ? "winner" : ""}">
+              ${teamPair}
+            </span>
+          </div>
+          <div>
+            <span class="winner-team">${opponentTeam}:</span>
+            ${opponentPair}
+          </div>
+          <div class="result-score">${scoreLine}</div>
+        </div>
+      `;
     });
 
-    card.innerHTML = content;
+    card.innerHTML = html;
     grid.appendChild(card);
   });
 }
