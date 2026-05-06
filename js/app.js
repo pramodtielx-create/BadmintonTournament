@@ -260,7 +260,7 @@ function showTeamMatches(team) {
 
 
 
-#########################################################
+/* ######################################################### */
 function renderPlayerView() {
   const container = document.getElementById("main-content");
   container.innerHTML = `
@@ -293,6 +293,7 @@ function renderPlayerView() {
   select.onchange = () => showPlayerMatches(select.value);
 }
 
+/* ####################show player match##################### */
 function showPlayerMatches(player) {
   const grid = document.getElementById("player-results");
   grid.innerHTML = "";
