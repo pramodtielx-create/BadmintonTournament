@@ -153,13 +153,22 @@ function showResults() {
 
       /* ========= PENDING ========= */
       if (!matchRes || !matchRes.sets) {
-        html += `
-          <div class="match pending">
-            <strong>M${idx + 1}</strong> ⏳ Pending
-            <div>${pair[0]}</div>
-            <div class="opponent">vs ${pair[1]}</div>
-          </div>
-        `;
+       html += `
+  <div class="result-row pending">
+    <div class="col-match">M${idx + 1}</div>
+
+    <div class="col-winner pending-text">⏳ Pending</div>
+
+    <div class="col-vs">vs</div>
+
+    <div class="col-opponent">
+      ${pair[0]} / ${pair[1]}
+    </div>
+
+    <div class="col-score">—</div>
+  </div>
+`;
+
         return;
       }
 
@@ -175,14 +184,26 @@ function showResults() {
         .map(s => `${s[0]}-${s[1]}`)
         .join(" | ");
 
-      html += `
-        <div class="match done">
-          <strong>M${idx + 1}</strong>
-          <span class="winner">🏆 ${winnerPair}</span>
-          <div class="opponent">vs ${opponentPair}</div>
-          <div class="result-score">${scoreLine}</div>
-        </div>
-      `;
+     html += `
+  <div class="result-row">
+    <div class="col-match">M${idx + 1}</div>
+
+    <div class="col-winner">
+      🏆 ${winnerPair}
+    </div>
+
+    <div class="col-vs">vs</div>
+
+    <div class="col-opponent">
+      ${opponentPair}
+    </div>
+
+    <div class="col-score">
+      ${scoreLine}
+    </div>
+  </div>
+`;
+
     });
 
     card.innerHTML = html;
