@@ -119,7 +119,7 @@ function renderFixtures() {
 }
 /* ============================Render Result =============================*/
 
-function renderResults() {
+/*function renderResults() {
   const grid = document.getElementById("results-grid");
   if (!grid) return;
 
@@ -161,7 +161,7 @@ function renderResults() {
     card.innerHTML = html;
     grid.appendChild(card);
   });
-}
+}*/
 /* ================= RESULTS VIEW ================= */
 function showResults() {
   const container = document.getElementById("main-content");
