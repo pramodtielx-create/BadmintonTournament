@@ -391,12 +391,6 @@ function showPlayerMatches(player) {
   });
 }
 
-/* ================= EXPOSE FUNCTIONS ================= */
-window.showFixtures = showFixtures;
-window.showResults = showResults;
-window.renderTeamView = renderTeamView;
-window.renderPlayerView = renderPlayerView;
-
 
 
 
