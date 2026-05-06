@@ -151,7 +151,7 @@ function showResults() {
     f.matches.forEach((pair, idx) => {
       const matchRes = res && res.matches[idx];
 
-      // ================= PENDING =================
+      /* ================= PENDING ================= */
       if (!matchRes || !matchRes.sets) {
         html += `
           <div class="match pending">
@@ -163,7 +163,7 @@ function showResults() {
         return;
       }
 
-      // ================= COMPLETED =================
+      /* ================= COMPLETED ================= */
       let a = 0, b = 0;
       matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
 
