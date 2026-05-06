@@ -127,7 +127,7 @@ function showResults() {
 
   container.innerHTML = `
     <h2>Results</h2>
-    <div class="fixtures-grid" id="results-grid"></div>
+    <div id="results-grid" class="fixtures-grid"></div>
   `;
 
   const grid = document.getElementById("results-grid");
@@ -136,40 +136,57 @@ function showResults() {
 
   fixtures.forEach(f => {
     const res = results[f.tie_id];
-    if (!res) return;
 
     const card = document.createElement("div");
     card.className = "fixture-card";
 
-    card.innerHTML = `
+    let html = `
       <div class="fixture-header">
-        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+        <strong>${f.team_a}</strong> <span class="vs">vs</span> <strong>${f.team_b}</strong>
       </div>
     `;
 
-    res.matches.forEach((m, idx) => {
-      if (!m.sets) {
-        card.innerHTML += `<div class="match pending">M${idx + 1} ⏳ Pending</div>`;
+    f.matches.forEach((pair, idx) => {
+      const matchRes = res && res.matches[idx];
+
+      // ================= PENDING MATCH =================
+      if (!matchRes || !matchRes.sets) {
+        html += `
+          <div class="match pending">
+            <strong>M${idx + 1}</strong> ⏳ Pending
+            <div>${pair[0]}</div>
+            <div>${pair[1]}</div>
+          </div>
+        `;
         return;
       }
 
+      // ================= COMPLETED MATCH =================
       let a = 0, b = 0;
-      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
-      const winner = a > b ? f.matches[idx][0] : f.matches[idx][1];
-      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+      matchRes.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
 
-      card.innerHTML += `
+      const winnerIndex = a > b ? 0 : 1;
+      const winnerPair = pair[winnerIndex];
+      const loserPair = pair[winnerIndex === 0 ? 1 : 0];
+
+      const scoreLine = matchRes.sets
+        .map(s => `${s[0]}-${s[1]}`)
+        .join(" | ");
+
+      html += `
         <div class="match done">
-          ✅ <span class="winner">${winner}</span>
-          <div class="result-score">${score}</div>
+          <strong>M${idx + 1}</strong>
+          <span class="winner">🏆 ${winnerPair}</span>
+          <div class="opponent">vs ${loserPair}</div>
+          <div class="result-score">${scoreLine}</div>
         </div>
       `;
     });
 
+    card.innerHTML = html;
     grid.appendChild(card);
   });
 }
-
 /* ================= EXPOSE FUNCTIONS ================= */
 window.showFixtures = showFixtures;
 window.showResults = showResults;
