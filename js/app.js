@@ -342,7 +342,16 @@ function showPlayerMatches(player) {
     });
   });
 }
-function showFixtures() {
-  buildUI();        // rebuild filters + grid
-  renderFixtures(); // render cards
+function showResults() {
+  // Clear the main area
+  const container = document.getElementById("main-content");
+  container.innerHTML = "";
+
+  // Build Results UI
+  renderResults();
 }
+// ✅ expose functions for sidebar buttons
+window.showFixtures = showFixtures;
+window.showResults = showResults;
+window.renderTeamView = renderTeamView;
+window.renderPlayerView = renderPlayerView;
