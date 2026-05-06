@@ -176,7 +176,7 @@ h4 {
   color: #374151;
 }
 
-/*
+
 .winner {
   color: #16a34a;
   font-weight: 700;
@@ -198,4 +198,57 @@ h4 {
   font-size: 12px;
   color: #6b7280;
 }
-*/
+
+/* ===== RESULTS ROW GRID ===== */
+.result-row {
+  display: grid;
+  grid-template-columns: px;  grid-template-columns: 42px 36px 1.6fr 40px 1.6fr 1.2fr;
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+/* Columns */
+.col-match {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.col-status {
+  text-align: center;
+}
+
+.col-winner {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.col-opponent {
+  color: #1f2937;
+}
+
+.col-vs {
+  text-align: center;
+  font-weight: 600;
+  color: #f97316;
+}
+
+.col-score {
+  text-align: right;
+  font-family: monospace;
+  color: #374151;
+}
+
+/* Pending */
+.result-row.pending {
+  color: #f59e0b;
+}
+
+.pending-text {
+  font-weight: 600;
+}
+  align-items: center;
