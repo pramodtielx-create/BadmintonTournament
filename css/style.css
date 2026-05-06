@@ -175,13 +175,24 @@ h4 {
  : 14px;  margin-bottom: 6px;
   color: #374151;
 }
+.winner {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.winner-team {
+  font-size: 12px;
+  color: #065f46;
+  margin-left: 6px;
+}
+
 .opponent {
   margin-left: 22px;
   font-size: 14px;
   color: #374151;
 }
 
-.match.done .winner {
-  color: #16a34a;
-  font-weight: 700;
+.loser-team {
+  font-size: 12px;
+  color: #6b7280;
 }
