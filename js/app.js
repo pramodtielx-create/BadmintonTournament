@@ -117,7 +117,51 @@ function renderFixtures() {
     grid.appendChild(card);
   });
 }
+/* ============================Render Result =============================*/
 
+function renderResults() {
+  const grid = document.getElementById("results-grid");
+  if (!grid) return;
+
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  fixtures.forEach(f => {
+    const res = results[f.tie_id];
+    if (!res) return;
+
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    let html = `
+      <div class="fixture-header">
+        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+      </div>
+    `;
+
+    res.matches.forEach((m, idx) => {
+      if (!m.sets) {
+        html += `<div class="match pending">M${idx + 1} ⏳ Pending</div>`;
+        return;
+      }
+
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const winner = a > b ? f.matches[idx][0] : f.matches[idx][1];
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      html += `
+        <div class="match done">
+          ✅ <span class="winner">${winner}</span>
+          <div class="result-score">${score}</div>
+        </div>
+      `;
+    });
+
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
+}
 /* ================= RESULTS VIEW ================= */
 function showResults() {
   const container = document.getElementById("main-content");
