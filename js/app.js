@@ -342,3 +342,7 @@ function showPlayerMatches(player) {
     });
   });
 }
+function showFixtures() {
+  buildUI();        // rebuild filters + grid
+  renderFixtures(); // render cards
+}
