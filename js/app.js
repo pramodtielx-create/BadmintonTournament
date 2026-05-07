@@ -1,8 +1,15 @@
 const API_URL =
-  "https://scriptElementById(id).onchange = renderFixtures  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
-  );
-  renderFixtures();
+  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
+
+let dataCache = null;
+
+/* INIT */
+async function init() {
+  const res = await fetch(API_URL);
+  dataCache = await res.json();
+  showFixtures();
 }
+init();
 
 function renderFixtures() {
   const grid = document.getElementById("fixtures-grid");
