@@ -101,21 +101,7 @@ body {
 }
 
 /* ================= RESULT / FIXTURE ROW ================= */
-/*.result-row {
-  display: grid;
-  grid-template-columns:
-    48px                       /* M */
-    minmax(180px, 1.6fr)       /* Team A */
-    40px                       /* VS */
-    minmax(180px, 1.6fr)       /* Team B */
-    minmax(140px, 1fr);        /* Score */
 
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #eef2f7;
-  font-size: 14px;
-}*/
 .result-row {
   display: grid;
   grid-template-columns:
