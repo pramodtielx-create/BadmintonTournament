@@ -15,18 +15,22 @@ function renderFixtures() {
   const summary = document.getElementById("summary");
   grid.innerHTML = "";
 
-const fixtures = dataCache.fixtures;
-const results = dataCache.results || {};
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
 
-let completed = 0;
-fixtures.forEach(f => {
-  const r = results[f.tie_id];
-  if (r) r.matches.forEach(m => m.sets && completed++);
-});
+  const showCompleted = document.getElementById("completed").checked;
+  const showPending = document.getElementById("pending").checked;
+
+  let completedCount = 0;
+  fixtures.forEach(f => {
+    const r = results[f.tie_id];
+    if (r) r.matches.forEach(m => m.sets && completedCount++);
+  });
 
   summary.innerHTML = `
     <div class="summary">
-      📊 <b>Fixtures Summary:</b> ${completed} / ${fixtures.length * 3}
+      📊 <strong>Fixtures Summary:</strong>
+      ${completedCount} / ${fixtures.length * 3} matches completed
     </div>
   `;
 
@@ -41,19 +45,35 @@ fixtures.forEach(f => {
       </div>
     `;
 
-    f.matches.forEach((pair,i)=>{
+    f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
-      if(!m || !m.sets){
-        html += `<div class="match pending">M${i+1} ⏳ ${pair[0]} vs ${pair[1]}</div>`;
+
+      if (!m || !m.sets) {
+        if (!showPending) return;
+
+        html += `
+          <div class="match pending">
+            M${i + 1} ⏳
+            <div>${pair[0]}</div>
+            <div>vs ${pair[1]}</div>
+          </div>
+        `;
         return;
       }
-      let a=0,b=0;
-      m.sets.forEach(s=>s[0]>s[1]?a++:b++);
-      const w=a>b?0:1;
+
+      if (!showCompleted) return;
+
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const w = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
       html += `
         <div class="match done">
-          M${i+1} 🏆 ${pair[w]} vs ${pair[w?0:1]}
-          <div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div>
+          M${i + 1} 🏆
+          <div>${pair[w]}</div>
+          <div>vs ${pair[w ? 0 : 1]}</div>
+          <div class="result-score">${score}</div>
         </div>
       `;
     });
