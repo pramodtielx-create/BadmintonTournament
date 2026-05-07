@@ -1176,10 +1176,8 @@ function showPlayerStandings(showAll = false) {
 function computeIndividualPlayerStandings() {
   const fixtures = dataCache.fixtures;
   const results = dataCache.results || {};
-
   const stats = {};
 
-  // Helper to init player
   function initPlayer(name, team) {
     return {
       name,
@@ -1194,11 +1192,11 @@ function computeIndividualPlayerStandings() {
       setDiff: 0,
       pointDiff: 0,
       winPct: 0,
-      form: []
+      recentForm: []
     };
   }
 
-  // Assign teams to players (same as Python teams_data loop)
+  // ✅ Assign teams to players (same as Python teams_data)
   fixtures.forEach(f => {
     f.matches.forEach(pair => {
       pair[0].split("/").forEach(p => {
@@ -1212,9 +1210,9 @@ function computeIndividualPlayerStandings() {
     });
   });
 
-  // Process results
+  // ✅ Process results (FIXED tie_id MATCH)
   Object.entries(results).forEach(([tieId, r]) => {
-    const fixture = fixtures.find(f => f.tie_id === tieId);
+    const fixture = fixtures.find(f => String(f.tie_id) === String(tieId));
     if (!fixture) return;
 
     r.matches.forEach((m, idx) => {
@@ -1232,7 +1230,7 @@ function computeIndividualPlayerStandings() {
         a > b ? aSets++ : bSets++;
       });
 
-      // Team A players
+      // ✅ Team A players
       teamAPlayers.forEach(p => {
         const s = stats[p];
         s.played++;
@@ -1242,14 +1240,14 @@ function computeIndividualPlayerStandings() {
         s.pointsLost += bPts;
         if (aSets > bSets) {
           s.wins++;
-          s.form.push("W");
+          s.recentForm.push("W");
         } else {
           s.losses++;
-          s.form.push("L");
+          s.recentForm.push("L");
         }
       });
 
-      // Team B players
+      // ✅ Team B players
       teamBPlayers.forEach(p => {
         const s = stats[p];
         s.played++;
@@ -1259,25 +1257,24 @@ function computeIndividualPlayerStandings() {
         s.pointsLost += aPts;
         if (bSets > aSets) {
           s.wins++;
-          s.form.push("W");
+          s.recentForm.push("W");
         } else {
           s.losses++;
-          s.form.push("L");
+          s.recentForm.push("L");
         }
       });
     });
   });
 
-  // Final calculations
+  // ✅ Final calculations
   Object.values(stats).forEach(p => {
     p.setDiff = p.setsWon - p.setsLost;
     p.pointDiff = p.pointsWon - p.pointsLost;
     p.winPct = p.played > 0 ? Math.round((p.wins / p.played) * 100) : 0;
-    p.recentForm = p.form.slice(-5).join(" ");
-    delete p.form;
+    p.recentForm = p.recentForm.slice(-5).join(" ");
   });
 
-  // Sort exactly like Streamlit
+  // ✅ EXACT same sort as Python
   return Object.values(stats).sort((a, b) =>
     b.wins - a.wins ||
     b.setDiff - a.setDiff ||
@@ -1286,6 +1283,7 @@ function computeIndividualPlayerStandings() {
     a.name.localeCompare(b.name)
   );
 }
+
 function showPlayerStandings(showAll = false) {
   const players = computeIndividualPlayerStandings();
   const list = showAll ? players : players.slice(0, 10);
