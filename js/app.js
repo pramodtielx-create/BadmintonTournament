@@ -105,8 +105,28 @@ function renderFixtures() {
   });
 }
 
+/**************************showresult*********************/
+function showResults() {
+  const c = document.getElementById("main-content");
 
+  c.innerHTML = `
+    <div class="filters">
+      <label><input type="checkbox" id="res-r1" checked> Round 1</label>
+      <label><input type="checkbox" id="res-r2" checked> Round 2</label>
+      <label><input type="checkbox" id="res-completed" checked> Completed</label>
+      <label><input type="checkbox" id="res-pending" checked> Pending</label>
+    </div>
 
+    <h2>Results</h2>
+    <div id="results-grid" class="fixtures-grid"></div>
+  `;
+
+  ["res-r1", "res-r2", "res-completed", "res-pending"].forEach(id => {
+    document.getElementById(id).onchange = renderResults;
+  });
+
+  renderResults();
+}
 /* ================= RESULTS ================= */
 function renderResults() {
   const grid = document.getElementById("results-grid");
@@ -345,27 +365,7 @@ function showPlayerMatches(player) {
   });
 }
 
-function showResults() {
-  const c = document.getElementById("main-content");
 
-  c.innerHTML = `
-    <div class="filters">
-      <label><input type="checkbox" id="res-r1" checked> Round 1</label>
-      <label><input type="checkbox" id="res-r2" checked> Round 2</label>
-      <label><input type="checkbox" id="res-completed" checked> Completed</label>
-      <label><input type="checkbox" id="res-pending" checked> Pending</label>
-    </div>
-
-    <h2>Results</h2>
-    <div id="results-grid" class="fixtures-grid"></div>
-  `;
-
-  ["res-r1", "res-r2", "res-completed", "res-pending"].forEach(id => {
-    document.getElementById(id).onchange = renderResults;
-  });
-
-  renderResults();
-}
 
 /* EXPORT */
 window.showFixtures = showFixtures;
