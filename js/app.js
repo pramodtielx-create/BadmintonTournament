@@ -447,25 +447,133 @@ function renderPlayerView() {
 
     <h2>Player Match Tracker</h2>
 
-    <select id="playerSelect">
-      <option value="">Select player</option>
-    </select>
+    <select id="playerSelect"></select>
 
-    <div class="fixtures-grid" id="player-grid"></div>
+    <div id="summary"></div>
+    <div id="player-grid" class="fixtures-grid"></div>
   `;
 
-  const sel = document.getElementById("playerSelect");
-  [...new Set(dataCache.fixtures.flatMap(f =>
-    f.matches.flatMap(p => p.join(" / ").split(" / "))
-  ))].forEach(p => sel.innerHTML += `<option>${p}</option>`);
+  const playerSelect = document.getElementById("playerSelect");
+  [...new Set(
+    dataCache.fixtures.flatMap(f =>
+      f.matches.flatMap(p => p.join(" / ").split(" / "))
+    )
+  )].forEach(p => playerSelect.innerHTML += `<option>${p}</option>`);
 
-  sel.onchange = () => showPlayerMatches(sel.value);
+  playerSelect.onchange = renderPlayerMatches;
 
-  ["p-r1","p-r2","p-completed","p-pending"].forEach(id =>
-    document.getElementById(id).onchange = () => showPlayerMatches(sel.value)
-  );
+  ["p-r1","p-r2","p-completed","p-pending"].forEach(id => {
+    document.getElementById(id).onchange = renderPlayerMatches;
+  });
+
+  renderPlayerMatches();
 }
+function renderPlayerMatches() {
+  const player = document.getElementById("playerSelect").value;
+  const grid = document.getElementById("player-grid");
+  const summary = document.getElementById("summary");
 
+  grid.innerHTML = "";
+  if (!player) return;
+
+  const showR1 = document.getElementById("p-r1").checked;
+  const showR2 = document.getElementById("p-r2").checked;
+  const showCompleted = document.getElementById("p-completed").checked;
+  const showPending = document.getElementById("p-pending").checked;
+
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  let totalCompleted = 0;
+  let totalPending = 0;
+
+  fixtures.forEach(f => {
+    const r = results[f.tie_id];
+    f.matches.forEach((pair, i) => {
+      if (!pair.join(" ").includes(player)) return;
+      const m = r && r.matches[i];
+      if (!m || !m.sets) totalPending++;
+      else totalCompleted++;
+    });
+  });
+
+  summary.innerHTML = `
+    <div class="summary">
+      ${showPending && !showCompleted
+        ? `⏳ Pending: ${totalPending} matches`
+        : showCompleted && !showPending
+        ? `✅ Completed: ${totalCompleted} matches`
+        : `📊 Completed: ${totalCompleted} / ${totalCompleted + totalPending} matches`}
+    </div>
+  `;
+
+  fixtures.forEach(f => {
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
+    const r = results[f.tie_id];
+    let visibleCount = 0;
+
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    let html = `
+      <div class="fixture-header">
+        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+      </div>
+
+      <div class="result-row header">
+        <div>M</div>
+        <div>${f.team_a}</div>
+        <div>VS</div>
+        <div>${f.team_b}</div>
+        <div>Score</div>
+      </div>
+    `;
+
+    f.matches.forEach((pair, i) => {
+      if (!pair.join(" ").includes(player)) return;
+      const m = r && r.matches[i];
+
+      if (!m || !m.sets) {
+        if (!showPending) return;
+        visibleCount++;
+        html += `
+          <div class="result-row pending">
+            <div>M${i + 1}</div>
+            <div>${pair[0]}</div>
+            <div>vs</div>
+            <div>${pair[1]}</div>
+            <div>—</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (!showCompleted) return;
+
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const winnerSide = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      visibleCount++;
+      html += `
+        <div class="result-row">
+          <div>M${i + 1}</div>
+          <div>${winnerSide === 0 ? "🏆 " : ""}${pair[0]}</div>
+          <div>vs</div>
+          <div>${winnerSide === 1 ? "🏆 " : ""}${pair[1]}</div>
+          <div>${score}</div>
+        </div>
+      `;
+    });
+
+    if (visibleCount > 0) {
+      card.innerHTML = html;
+      grid.appendChild(card);
+    }
+  });
+}
 function showPlayerMatches(player) {
   const g = document.getElementById("player-grid");
   g.innerHTML = "";
@@ -576,20 +684,132 @@ function renderTeamView() {
 
     <h2>Team Match Tracker</h2>
 
-    <select id="teamSelect">
-      <option value="">Select team</option>
-    </select>
+    <select id="teamSelect"></select>
 
-    <div class="fixtures-grid" id="team-grid"></div>
+    <div id="summary"></div>
+    <div id="team-grid" class="fixtures-grid"></div>
   `;
 
-  const sel = document.getElementById("teamSelect");
+  const teamSelect = document.getElementById("teamSelect");
   [...new Set(dataCache.fixtures.flatMap(f => [f.team_a, f.team_b]))]
-    .forEach(t => sel.innerHTML += `<option>${t}</option>`);
+    .forEach(t => teamSelect.innerHTML += `<option>${t}</option>`);
 
-  sel.onchange = () => showTeamMatches(sel.value);
+  teamSelect.onchange = renderTeamMatches;
 
-  ["t-r1","t-r2","t-completed","t-pending"].forEach(id =>
-    document.getElementById(id).onchange = () => showTeamMatches(sel.value)
-  );
+  ["t-r1","t-r2","t-completed","t-pending"].forEach(id => {
+    document.getElementById(id).onchange = renderTeamMatches;
+  });
+
+  renderTeamMatches();
+}
+
+function renderTeamMatches() {
+  const team = document.getElementById("teamSelect").value;
+  const grid = document.getElementById("team-grid");
+  const summary = document.getElementById("summary");
+
+  grid.innerHTML = "";
+  if (!team) return;
+
+  const showR1 = document.getElementById("t-r1").checked;
+  const showR2 = document.getElementById("t-r2").checked;
+  const showCompleted = document.getElementById("t-completed").checked;
+  const showPending = document.getElementById("t-pending").checked;
+
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  // ===== GLOBAL SUMMARY =====
+  let totalCompleted = 0;
+  let totalPending = 0;
+
+  fixtures.forEach(f => {
+    if (f.team_a !== team && f.team_b !== team) return;
+    const r = results[f.tie_id];
+    f.matches.forEach((_, i) => {
+      const m = r && r.matches[i];
+      if (!m || !m.sets) totalPending++;
+      else totalCompleted++;
+    });
+  });
+
+  summary.innerHTML = `
+    <div class="summary">
+      ${showPending && !showCompleted
+        ? `⏳ Pending: ${totalPending} matches`
+        : showCompleted && !showPending
+        ? `✅ Completed: ${totalCompleted} matches`
+        : `📊 Completed: ${totalCompleted} / ${totalCompleted + totalPending} matches`}
+    </div>
+  `;
+
+  // ===== GRID =====
+  fixtures.forEach(f => {
+    if (f.team_a !== team && f.team_b !== team) return;
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
+    const r = results[f.tie_id];
+    let visibleCount = 0;
+
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    let html = `
+      <div class="fixture-header">
+        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+      </div>
+
+      <div class="result-row header">
+        <div>M</div>
+        <div>${f.team_a}</div>
+        <div>VS</div>
+        <div>${f.team_b}</div>
+        <div>Score</div>
+      </div>
+    `;
+
+    f.matches.forEach((pair, i) => {
+      const m = r && r.matches[i];
+
+      // Pending
+      if (!m || !m.sets) {
+        if (!showPending) return;
+        visibleCount++;
+        html += `
+          <div class="result-row pending">
+            <div>M${i + 1}</div>
+            <div>${pair[0]}</div>
+            <div>vs</div>
+            <div>${pair[1]}</div>
+            <div>—</div>
+          </div>
+        `;
+        return;
+      }
+
+      // Completed
+      if (!showCompleted) return;
+
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const winnerSide = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      visibleCount++;
+      html += `
+        <div class="result-row">
+          <div>M${i + 1}</div>
+          <div>${winnerSide === 0 ? "🏆 " : ""}${pair[0]}</div>
+          <div>vs</div>
+          <div>${winnerSide === 1 ? "🏆 " : ""}${pair[1]}</div>
+          <div>${score}</div>
+        </div>
+      `;
+    });
+
+    if (visibleCount > 0) {
+      card.innerHTML = html;
+      grid.appendChild(card);
+    }
+  });
 }
