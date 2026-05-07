@@ -111,26 +111,59 @@ body {
 }
 
 /* Results / Tracker row layout */
+/* ================= RESULT / FIXTURE TABLE ROW ================= */
+
 .result-row {
   display: grid;
-  grid-template-columns: 40px 32px 1.6fr 32px 1.6fr 1.2fr;
-  gap: 8px;
+  grid-template-columns: 
+    48px          /* M */
+    minmax(160px, 1.6fr) /* Team A */
+    40px          /* VS */
+    minmax(160px, 1.6fr) /* Team B */
+    minmax(120px, 1fr);  /* Score */
+
   align-items: center;
-  padding: 6px 0;
-  font-size: 14px;
+  gap: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid #eef2f7;
+  font-size: 14px;
 }
 
+/* Header row */
 .result-row.header {
-  font-size: 12px;
   font-weight: 700;
-  color: #6b7280;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #94a3b8;
   border-bottom: 2px solid #e5e7eb;
 }
 
+/* Pending row */
 .result-row.pending {
   color: #f59e0b;
 }
+
+/* VS column */
+.result-row div:nth-child(3) {
+  text-align: center;
+  font-weight: 600;
+  color: #f97316;
+}
+
+/* Score column */
+.result-row div:last-child {
+  text-align: right;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+/* Trophy spacing */
+.result-row div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 
 .col-winner {
   font-weight: 700;
@@ -147,8 +180,4 @@ body {
   text-align: right;
   font-family: monospace;
 }
-.result-row div {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+
