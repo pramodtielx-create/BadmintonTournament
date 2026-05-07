@@ -264,25 +264,25 @@ function renderResults() {
   const showCompleted = document.getElementById("res-completed").checked;
   const showPending = document.getElementById("res-pending").checked;
 
+  /* ================= GLOBAL SUMMARY (ENTIRE TOURNAMENT) ================= */
+  let totalCompleted = 0;
+  let totalPending = 0;
+
+  fixtures.forEach(f => {
+    const r = results[f.tie_id];
+    f.matches.forEach((_, i) => {
+      const m = r && r.matches[i];
+      if (!m || !m.sets) totalPending++;
+      else totalCompleted++;
+    });
+  });
+
+  /* ================= RESULTS GRID ================= */
   fixtures.forEach(f => {
     // Round filter
     if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
 
     const r = results[f.tie_id];
-
-    // ===== COUNT STATES (STRICT FILTER) =====
-    let pendingCount = 0;
-    let completedCount = 0;
-
-    f.matches.forEach((_, i) => {
-      const m = r && r.matches[i];
-      if (!m || !m.sets) pendingCount++;
-      else completedCount++;
-    });
-
-    if (showPending && !showCompleted && completedCount > 0) return;
-    if (showCompleted && !showPending && pendingCount > 0) return;
-
     const card = document.createElement("div");
     card.className = "fixture-card";
 
@@ -300,12 +300,16 @@ function renderResults() {
       </div>
     `;
 
+    let visibleMatchCount = 0;
+
     f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
 
-      // ===== PENDING =====
+      /* ================= PENDING ================= */
       if (!m || !m.sets) {
         if (!showPending) return;
+
+        visibleMatchCount++;
 
         html += `
           <div class="result-row pending">
@@ -319,13 +323,16 @@ function renderResults() {
         return;
       }
 
-      // ===== COMPLETED =====
+      /* ================= COMPLETED ================= */
       if (!showCompleted) return;
 
       let a = 0, b = 0;
       m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+
       const winnerSide = a > b ? 0 : 1;
       const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      visibleMatchCount++;
 
       html += `
         <div class="result-row">
@@ -338,9 +345,30 @@ function renderResults() {
       `;
     });
 
-    card.innerHTML = html;
-    grid.appendChild(card);
+    // ✅ Show tie only if at least one row is visible
+    if (visibleMatchCount > 0) {
+      card.innerHTML = html;
+      grid.appendChild(card);
+    }
   });
+
+  /* ================= SUMMARY ================= */
+  const summary = document.getElementById("summary");
+  let summaryText = "";
+
+  if (showPending && !showCompleted) {
+    summaryText = `⏳ Pending: ${totalPending} matches`;
+  } else if (showCompleted && !showPending) {
+    summaryText = `✅ Completed: ${totalCompleted} matches`;
+  } else {
+    summaryText = `📊 Completed: ${totalCompleted} / ${totalCompleted + totalPending} matches`;
+  }
+
+  summary.innerHTML = `
+    <div class="summary">
+      ${summaryText}
+    </div>
+  `;
 }
 
 
