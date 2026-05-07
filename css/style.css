@@ -83,6 +83,9 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
+.fixture-card {
+  overflow-x: auto;   /* ✅ allow horizontal scroll if needed */
+}
 
 .fixture-header {
   font-weight: 700;
@@ -164,6 +167,15 @@ body {
   gap: 6px;
 }
 
+.result-row div {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.result-row div:nth-child(2),
+.result-row div:nth-child(4) {
+  min-width: 180px;
+}
 
 .col-winner {
   font-weight: 700;
