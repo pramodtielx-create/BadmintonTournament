@@ -108,60 +108,83 @@ function renderFixtures() {
 
 
 /* ================= RESULTS ================= */
-function showResults() {
-  const c = document.getElementById("main-content");
-  c.innerHTML = `
-    <div class="filters">
-      <label><input type="checkbox" id="rr1" checked> Round 1</label>
-      <label><input type="checkbox" id="rr2" checked> Round 2</label>
-      <label><input type="checkbox" id="rc" checked> Completed</label>
-      <label><input type="checkbox" id="rp" checked> Pending</label>
-    </div>
-    <div class="fixtures-grid" id="results-grid"></div>
-  `;
-  ["rr1","rr2","rc","rp"].forEach(id =>
-    document.getElementById(id).onchange = showResults
-  );
-
+function renderResults() {
   const grid = document.getElementById("results-grid");
+  grid.innerHTML = "";
+
   const fixtures = dataCache.fixtures;
   const results = dataCache.results || {};
 
-  fixtures.forEach(f=>{
+  const showR1 = document.getElementById("res-r1").checked;
+  const showR2 = document.getElementById("res-r2").checked;
+  const showCompleted = document.getElementById("res-completed").checked;
+  const showPending = document.getElementById("res-pending").checked;
+
+  fixtures.forEach(f => {
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
     const r = results[f.tie_id];
+
+    let pendingCount = 0;
+    let completedCount = 0;
+
+    f.matches.forEach((_, i) => {
+      const m = r && r.matches[i];
+      if (!m || !m.sets) pendingCount++;
+      else completedCount++;
+    });
+
+    // ✅ SAME STRICT LOGIC AS FIXTURES
+    if (showPending && !showCompleted && completedCount > 0) return;
+    if (showCompleted && !showPending && pendingCount > 0) return;
+
     const card = document.createElement("div");
-    card.className="fixture-card";
+    card.className = "fixture-card";
 
     let html = `
       <div class="fixture-header">
         ${f.team_a} <span class="vs">vs</span> ${f.team_b}
       </div>
+
       <div class="result-row header">
         <div>M</div><div></div><div>Winner</div><div></div><div>Opponent</div><div>Score</div>
       </div>
     `;
 
-    f.matches.forEach((pair,i)=>{
+    f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
-      if(!m || !m.sets){
+
+      if (!m || !m.sets) {
+        if (!showPending) return;
+
         html += `
           <div class="result-row pending">
-            <div>M${i+1}</div><div>⏳</div>
-            <div>Pending</div><div>vs</div>
-            <div>${pair[0]} / ${pair[1]}</div><div>—</div>
+            <div>M${i + 1}</div>
+            <div>⏳</div>
+            <div>Pending</div>
+            <div>vs</div>
+            <div>${pair[0]} / ${pair[1]}</div>
+            <div>—</div>
           </div>
         `;
         return;
       }
-      let a=0,b=0;
-      m.sets.forEach(s=>s[0]>s[1]?a++:b++);
-      const w=a>b?0:1;
+
+      if (!showCompleted) return;
+
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const w = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
       html += `
         <div class="result-row">
-          <div>M${i+1}</div><div>🏆</div>
-          <div>${pair[w]}</div><div>vs</div>
-          <div>${pair[w?0:1]}</div>
-          <div>${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div>
+          <div>M${i + 1}</div>
+          <div>🏆</div>
+          <div>${pair[w]}</div>
+          <div>vs</div>
+          <div>${pair[w ? 0 : 1]}</div>
+          <div>${score}</div>
         </div>
       `;
     });
@@ -170,6 +193,7 @@ function showResults() {
     grid.appendChild(card);
   });
 }
+
 
 /* ================= TEAM ================= */
 
