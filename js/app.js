@@ -128,32 +128,63 @@ function showResults() {
 }
 
 /* ================= TEAM ================= */
-function renderTeamView() {
-  const c=document.getElementById("main-content");
-  c.innerHTML=`<h2>Team Match Tracker</h2><select id="teamSel"></select><div class="fixtures-grid" id="teamGrid"></div>`;
-  const sel=document.getElementById("teamSel");
-  [...new Set(dataCache.fixtures.flatMap(f=>[f.team_a,f.team_b]))].forEach(t=>sel.innerHTML+=`<option>${t}</option>`);
-  sel.onchange=()=>showTeamMatches(sel.value);
-}
 
-function showTeamMatches(team){
-  const g=document.getElementById("teamGrid"); g.innerHTML="";
-  dataCache.fixtures.forEach(f=>{
-    if(f.team_a!==team && f.team_b!==team) return;
-    const r=dataCache.results[f.tie_id];
-    const c=document.createElement("div");
-    c.className="fixture-card";
-    let h=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
-    f.matches.forEach((p,i)=>{
-      const m=r && r.matches[i];
-      if(!m||!m.sets) h+=`<div class="match pending">M${i+1} ⏳ ${p[0]} vs ${p[1]}</div>`;
-      else {
-        let a=0,b=0;
-        m.sets.forEach(s=>s[0]>s[1]?a++:b++);
-        h+=`<div class="match done">M${i+1} 🏆 ${p[a>b?0:1]} vs ${p[a>b?1:0]}<div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
+
+
+function showTeamMatches(team) {
+  const g = document.getElementById("team-grid");
+  g.innerHTML = "";
+  if (!team) return;
+
+  const showR1 = document.getElementById("t-r1").checked;
+  const showR2 = document.getElementById("t-r2").checked;
+  const showCompleted = document.getElementById("t-completed").checked;
+  const showPending = document.getElementById("t-pending").checked;
+
+  dataCache.fixtures.forEach(f => {
+    if (f.team_a !== team && f.team_b !== team) return;
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
+    const r = dataCache.results[f.tie_id];
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    let html = `<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
+
+    f.matches.forEach((p,i) => {
+      const m = r && r.matches[i];
+
+      if (!m || !m.sets) {
+        if (!showPending) return;
+        html += `
+          <div class="match pending">
+            M${i+1} ⏳
+            <div>${p[0]}</div>
+            <div>vs ${p[1]}</div>
+          </div>
+        `;
+        return;
       }
+
+      if (!showCompleted) return;
+
+      let a=0,b=0;
+      m.sets.forEach(s => s[0] > s[1] ? a++ : b++);
+      const w = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+      html += `
+        <div class="match done">
+          M${i+1} 🏆
+          <div>${p[w]}</div>
+          <div>vs ${p[w ? 0 : 1]}</div>
+          <div class="result-score">${score}</div>
+        </div>
+      `;
     });
-    c.innerHTML=h; g.appendChild(c);
+
+    card.innerHTML = html;
+    g.appendChild(card);
   });
 }
 
@@ -166,23 +197,58 @@ function renderPlayerView(){
   sel.onchange=()=>showPlayerMatches(sel.value);
 }
 
-function showPlayerMatches(player){
-  const g=document.getElementById("pGrid"); g.innerHTML="";
-  dataCache.fixtures.forEach(f=>{
-    const r=dataCache.results[f.tie_id];
-    f.matches.forEach((p,i)=>{
-      if(!p.join(" ").includes(player)) return;
-      const c=document.createElement("div");
-      c.className="fixture-card";
-      let h=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
-      const m=r && r.matches[i];
-      if(!m||!m.sets) h+=`<div class="match pending">M${i+1} ⏳ ${p[0]} vs ${p[1]}</div>`;
-      else {
+function showPlayerMatches(player) {
+  const g = document.getElementById("player-grid");
+  g.innerHTML = "";
+  if (!player) return;
+
+  const showR1 = document.getElementById("p-r1").checked;
+  const showR2 = document.getElementById("p-r2").checked;
+  const showCompleted = document.getElementById("p-completed").checked;
+  const showPending = document.getElementById("p-pending").checked;
+
+  dataCache.fixtures.forEach(f => {
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
+    const r = dataCache.results[f.tie_id];
+
+    f.matches.forEach((p,i) => {
+      if (!p.join(" ").includes(player)) return;
+
+      const m = r && r.matches[i];
+      const card = document.createElement("div");
+      card.className = "fixture-card";
+
+      let html = `<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
+
+      if (!m || !m.sets) {
+        if (!showPending) return;
+        html += `
+          <div class="match pending">
+            M${i+1} ⏳
+            <div>${p[0]}</div>
+            <div>vs ${p[1]}</div>
+          </div>
+        `;
+      } else {
+        if (!showCompleted) return;
         let a=0,b=0;
-        m.sets.forEach(s=>s[0]>s[1]?a++:b++);
-        h+=`<div class="match done">M${i+1} 🏆 ${p[a>b?0:1]} vs ${p[a>b?1:0]}<div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
+        m.sets.forEach(s => s[0] > s[1] ? a++ : b++);
+        const w = a > b ? 0 : 1;
+        const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+        html += `
+          <div class="match done">
+            M${i+1} 🏆
+            <div>${p[w]}</div>
+            <div>vs ${p[w ? 0 : 1]}</div>
+            <div class="result-score">${score}</div>
+          </div>
+        `;
       }
-      c.innerHTML=h; g.appendChild(c);
+
+      card.innerHTML = html;
+      g.appendChild(card);
     });
   });
 }
@@ -224,4 +290,34 @@ function showFixtures() {
   });
 
   renderFixtures();
+}
+function renderTeamView() {
+  const c = document.getElementById("main-content");
+
+  c.innerHTML = `
+    <div class="filters">
+      <label><input type="checkbox" id="t-r1" checked> Round 1</label>
+      <label><input type="checkbox" id="t-r2" checked> Round 2</label>
+      <label><input type="checkbox" id="t-completed" checked> Completed</label>
+      <label><input type="checkbox" id="t-pending" checked> Pending</label>
+    </div>
+
+    <h2>Team Match Tracker</h2>
+
+    <select id="teamSelect">
+      <option value="">Select team</option>
+    </select>
+
+    <div class="fixtures-grid" id="team-grid"></div>
+  `;
+
+  const sel = document.getElementById("teamSelect");
+  [...new Set(dataCache.fixtures.flatMap(f => [f.team_a, f.team_b]))]
+    .forEach(t => sel.innerHTML += `<option>${t}</option>`);
+
+  sel.onchange = () => showTeamMatches(sel.value);
+
+  ["t-r1","t-r2","t-completed","t-pending"].forEach(id =>
+    document.getElementById(id).onchange = () => showTeamMatches(sel.value)
+  );
 }
