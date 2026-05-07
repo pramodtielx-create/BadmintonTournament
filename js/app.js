@@ -1031,3 +1031,145 @@ function showStandings() {
   c.innerHTML = html;
 }
 */
+
+function computePlayerStandings() {
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  const players = {};
+
+  function initPlayer(name, team) {
+    return {
+      name,
+      team,
+      played: 0,
+      wins: 0,
+      losses: 0,
+      setsWon: 0,
+      setsLost: 0,
+      pointsWon: 0,
+      pointsLost: 0,
+      setDiff: 0,
+      pointDiff: 0,
+      winPct: 0,
+      form: []
+    };
+  }
+
+  fixtures.forEach(f => {
+    const res = results[f.tie_id];
+    if (!res) return;
+
+    f.matches.forEach((pair, i) => {
+      const m = res.matches[i];
+      if (!m || !m.sets) return;
+
+      const [pA, pB] = pair;
+
+      players[pA] ??= initPlayer(pA, f.team_a);
+      players[pB] ??= initPlayer(pB, f.team_b);
+
+      let setsA = 0, setsB = 0;
+      let ptsA = 0, ptsB = 0;
+
+      m.sets.forEach(s => {
+        ptsA += s[0];
+        ptsB += s[1];
+        s[0] > s[1] ? setsA++ : setsB++;
+      });
+
+      const A = players[pA];
+      const B = players[pB];
+
+      A.played++; B.played++;
+      A.setsWon += setsA; A.setsLost += setsB;
+      B.setsWon += setsB; B.setsLost += setsA;
+      A.pointsWon += ptsA; A.pointsLost += ptsB;
+      B.pointsWon += ptsB; B.pointsLost += ptsA;
+
+      if (setsA > setsB) {
+        A.wins++; B.losses++;
+        A.form.unshift("W");
+        B.form.unshift("L");
+      } else {
+        B.wins++; A.losses++;
+        B.form.unshift("W");
+        A.form.unshift("L");
+      }
+    });
+  });
+
+  Object.values(players).forEach(p => {
+    p.setDiff = p.setsWon - p.setsLost;
+    p.pointDiff = p.pointsWon - p.pointsLost;
+    p.winPct = p.played ? Math.round((p.wins / p.played) * 100) : 0;
+    p.form = p.form.slice(0, 5).join("");
+  });
+
+  return Object.values(players).sort((a, b) =>
+    b.wins - a.wins ||
+    b.setDiff - a.setDiff ||
+    b.pointDiff - a.pointDiff ||
+    a.played - b.played ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function showPlayerStandings(showAll = false) {
+  const players = computePlayerStandings();
+  const list = showAll ? players : players.slice(0, 10);
+
+  const c = document.getElementById("main-content");
+
+  let html = `
+    <h2>👤 Player Standings</h2>
+    <p style="opacity:.7">Ranked by Wins → Set Diff → Point Diff → Played</p>
+
+    <label style="margin-bottom:12px;display:inline-block">
+      <input type="checkbox" ${showAll ? "checked" : ""}
+        onchange="showPlayerStandings(this.checked)">
+      Show All Players
+    </label>
+
+    <div class="fixture-card">
+      <div class="standings-grid standings-header">
+        <div>R</div>
+        <div>Player</div>
+        <div>Team</div>
+        <div>P</div>
+        <div>W</div>
+        <div>L</div>
+        <div>Win%</div>
+        <div>SW</div>
+        <div>SL</div>
+        <div>SD</div>
+        <div>PW</div>
+        <div>PL</div>
+        <div>PD</div>
+        <div>Form</div>
+      </div>
+  `;
+
+  list.forEach((p, i) => {
+    html += `
+      <div class="standings-grid standings-row">
+        <div>${i + 1}</div>
+        <div>${p.name}</div>
+        <div>${p.team}</div>
+        <div>${p.played}</div>
+        <div>${p.wins}</div>
+        <div>${p.losses}</div>
+        <div>${p.winPct}</div>
+        <div>${p.setsWon}</div>
+        <div>${p.setsLost}</div>
+        <div>${p.setDiff}</div>
+        <div>${p.pointsWon}</div>
+        <div>${p.pointsLost}</div>
+        <div>${p.pointDiff}</div>
+        <div>${renderForm(p.form)}</div>
+      </div>
+    `;
+  });
+
+  c.innerHTML = html + `</div>`;
+}
