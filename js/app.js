@@ -302,22 +302,27 @@ function renderResults() {
 
       if (!showCompleted) return;
 
-      let a = 0, b = 0;
-      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
-      const w = a > b ? 0 : 1;
-      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+     let a = 0, b = 0;
+m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
 
-      html += `
-        <div class="result-row">
-          <div>M${i + 1}</div>
-          <div>🏆</div>
-          <div>${pair[w]}</div>
-          <div>vs</div>
-          <div>${pair[w ? 0 : 1]}</div>
-          <div>${score}</div>
-        </div>
-      `;
-    });
+// winnerSide: 0 = left pair, 1 = right pair
+const winnerSide = a > b ? 0 : 1;
+
+html += `
+  <div class="result-row">
+    <div>M${i + 1}</div>
+
+    <div>${winnerSide === 0 ? "🏆" : ""}</div>
+    <div>${pair[0]}</div>
+
+    <div>vs</div>
+
+    <div>${pair[1]}</div>
+    <div>${winnerSide === 1 ? "🏆" : ""}</div>
+
+    <div>${score}</div>
+  </div>
+`;
 
     card.innerHTML = html;
     grid.appendChild(card);
