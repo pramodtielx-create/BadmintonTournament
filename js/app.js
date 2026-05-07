@@ -1018,4 +1018,3 @@ function showStandings() {
   c.innerHTML = html;
 }
 */
-*/
