@@ -813,3 +813,153 @@ function renderTeamMatches() {
     }
   });
 }
+
+
+
+function computeTeamStandings() {
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  const teams = {};
+
+  // Initialize teams
+  fixtures.forEach(f => {
+    if (!teams[f.team_a]) teams[f.team_a] = initTeam(f.team_a);
+    if (!teams[f.team_b]) teams[f.team_b] = initTeam(f.team_b);
+  });
+
+  // Process matches
+  fixtures.forEach(f => {
+    const res = results[f.tie_id];
+    if (!res) return;
+
+    res.matches.forEach((m, idx) => {
+      if (!m.sets) return; // pending match
+
+      const pairA = f.matches[idx][0];
+      const pairB = f.matches[idx][1];
+
+      let setsA = 0, setsB = 0;
+      let pointsA = 0, pointsB = 0;
+
+      m.sets.forEach(s => {
+        pointsA += s[0];
+        pointsB += s[1];
+        if (s[0] > s[1]) setsA++;
+        else setsB++;
+      });
+
+      const teamA = teams[f.team_a];
+      const teamB = teams[f.team_b];
+
+      teamA.played++;
+      teamB.played++;
+
+      teamA.setsWon += setsA;
+      teamA.setsLost += setsB;
+      teamB.setsWon += setsB;
+      teamB.setsLost += setsA;
+
+      teamA.pointsWon += pointsA;
+      teamA.pointsLost += pointsB;
+      teamB.pointsWon += pointsB;
+      teamB.pointsLost += pointsA;
+
+      if (setsA > setsB) {
+        teamA.wins++;
+        teamB.losses++;
+        teamA.leaguePoints += 2;
+        teamA.form.unshift("W");
+        teamB.form.unshift("L");
+      } else {
+        teamB.wins++;
+        teamA.losses++;
+        teamB.leaguePoints += 2;
+        teamB.form.unshift("W");
+        teamA.form.unshift("L");
+      }
+    });
+  });
+
+  // Final calculations
+  Object.values(teams).forEach(t => {
+    t.setDiff = t.setsWon - t.setsLost;
+    t.pointDiff = t.pointsWon - t.pointsLost;
+    t.form = t.form.slice(0, 5).join("");
+  });
+
+  // Sort standings
+  return Object.values(teams).sort((a, b) =>
+    b.leaguePoints - a.leaguePoints ||
+    b.setDiff - a.setDiff ||
+    b.pointDiff - a.pointDiff ||
+    b.wins - a.wins ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function initTeam(name) {
+  return {
+    name,
+    played: 0,
+    wins: 0,
+    losses: 0,
+    setsWon: 0,
+    setsLost: 0,
+    pointsWon: 0,
+    pointsLost: 0,
+    setDiff: 0,
+    pointDiff: 0,
+    leaguePoints: 0,
+    form: []
+  };
+}
+
+
+function showStandings() {
+  const standings = computeTeamStandings();
+  const c = document.getElementById("main-content");
+
+  let html = `
+    <h2>🏆 Team Standings</h2>
+    <div class="fixture-card">
+      <div class="result-row header">
+        <div>Team</div>
+        <div>R</div>
+        <div>P</div>
+        <div>W</div>
+        <div>L</div>
+        <div>SW</div>
+        <div>SL</div>
+        <div>PW</div>
+        <div>PL</div>
+        <div>SD</div>
+        <div>PD</div>
+        <div>Pts</div>
+        <div>Form</div>
+      </div>
+  `;
+
+  standings.forEach((t, i) => {
+    html += `
+      <div class="result-row">
+        <div>${t.name}</div>
+        <div>${i + 1}</div>
+        <div>${t.played}</div>
+        <div>${t.wins}</div>
+        <div>${t.losses}</div>
+        <div>${t.setsWon}</div>
+        <div>${t.setsLost}</div>
+        <div>${t.pointsWon}</div>
+        <div>${t.pointsLost}</div>
+        <div>${t.setDiff}</div>
+        <div>${t.pointDiff}</div>
+        <div>${t.leaguePoints}</div>
+        <div>${t.form}</div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  c.innerHTML = html;
+}
