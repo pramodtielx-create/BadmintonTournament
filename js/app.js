@@ -1,9 +1,8 @@
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
+const API_URL =const API_URLscript.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
 
 let dataCache = null;
 
-/* ================= INIT ================= */
+/* INIT */
 async function init() {
   const res = await fetch(API_URL);
   dataCache = await res.json();
@@ -13,92 +12,56 @@ init();
 
 /* ================= FIXTURES ================= */
 function showFixtures() {
-  const container = document.getElementById("main-content");
-  container.innerHTML = `
+  const c = document.getElementById("main-content");
+  c.innerHTML = `
     <div class="filters">
       <label><input type="checkbox" id="r1" checked> Round 1</label>
       <label><input type="checkbox" id="r2" checked> Round 2</label>
       <label><input type="checkbox" id="completed" checked> Completed</label>
       <label><input type="checkbox" id="pending" checked> Pending</label>
     </div>
-
     <div id="summary"></div>
     <div id="fixtures-grid" class="fixtures-grid"></div>
   `;
-
   ["r1","r2","completed","pending"].forEach(id =>
-    document.getElementById(id).addEventListener("change", renderFixtures)
+    document.getElementById(id).onchange = renderFixtures
   );
-
   renderFixtures();
 }
 
 function renderFixtures() {
   const grid = document.getElementById("fixtures-grid");
   const summary = document.getElementById("summary");
-  if (!grid) return;
-
   grid.innerHTML = "";
 
-  const fixtures = dataCache.fixtures;
-  const results = dataCache.results || {};
+  const fxs = dataCache.fixtures;
+  const resAll = dataCache.results || {};
 
-  const showR1 = document.getElementById("r1").checked;
-  const showR2 = document.getElementById("r2").checked;
-  const showCompleted = document.getElementById("completed").checked;
-  const showPending = document.getElementById("pending").checked;
+  let completed = 0;
+  fxs.forEach(f => {
+    const r = resAll[f.tie_id];
+    if (r) r.matches.forEach(m => m.sets && completed++);
+  });
 
-  let completedCount = 0;
-  const total = fixtures.length * 3;
-  Object.values(results).forEach(r =>
-    r.matches.forEach(m => m.sets && completedCount++)
-  );
+  summary.innerHTML = `<div class="summary">📊 <b>Fixtures Summary:</b> ${completed} / ${fxs.length*3}</div>`;
 
-  summary.innerHTML = `
-    <div class="summary">
-      📊 <strong>Fixtures Summary:</strong>
-      ${completedCount} / ${total} matches completed
-    </div>
-  `;
-
-  fixtures.forEach(f => {
-    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
-
-    const res = results[f.tie_id];
-    const done = res ? res.matches.filter(m => m.sets).length : 0;
-
-    if ((done === 3 && !showCompleted) || (done < 3 && !showPending)) return;
-
+  fxs.forEach(f => {
+    const r = resAll[f.tie_id];
     const card = document.createElement("div");
     card.className = "fixture-card";
 
-    let html = `
-      <div class="fixture-header">
-        <strong>${f.team_a}</strong>
-        <span class="vs">vs</span>
-        <strong>${f.team_b}</strong>
-      </div>
-      <div class="fixture-sub">${done} / 3 matches completed</div>
-    `;
+    let html = `<div class="fixture-header">${f.team_a} <span class="vs">vs</span> ${f.team_b}</div>`;
 
-    f.matches.forEach((pair, i) => {
-      const m = res && res.matches[i];
+    f.matches.forEach((pair,i)=>{
+      const m = r && r.matches[i];
       if (!m || !m.sets) {
         html += `<div class="match pending">M${i+1} ⏳ ${pair[0]} vs ${pair[1]}</div>`;
         return;
       }
-
       let a=0,b=0;
-      m.sets.forEach(s => s[0]>s[1]?a++:b++);
-      const winIdx = a>b?0:1;
-      const score = m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ");
-
-      html += `
-        <div class="match done">
-          M${i+1} 🏆 ${pair[winIdx]}
-          <div class="result-score">${score}</div>
-        </div>
-      `;
+      m.sets.forEach(s=>s[0]>s[1]?a++:b++);
+      const w=a>b?0:1;
+      html += `<div class="match done">M${i+1} 🏆 ${pair[w]} vs ${pair[w?0:1]}<div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
     });
 
     card.innerHTML = html;
@@ -108,90 +71,106 @@ function renderFixtures() {
 
 /* ================= RESULTS ================= */
 function showResults() {
-  const container = document.getElementById("main-content");
-  container.innerHTML = `
-    <h2>Results</h2>
+  const c = document.getElementById("main-content");
+  c.innerHTML = `
+    <div class="filters">
+      <label><input type="checkbox" id="rr1" checked> Round 1</label>
+      <label><input type="checkbox" id="rr2" checked> Round 2</label>
+      <label><input type="checkbox" id="rc" checked> Completed</label>
+      <label><input type="checkbox" id="rp" checked> Pending</label>
+    </div>
     <div class="fixtures-grid" id="results-grid"></div>
   `;
+  ["rr1","rr2","rc","rp"].forEach(id =>
+    document.getElementById(id).onchange = showResults
+  );
 
   const grid = document.getElementById("results-grid");
-  const fixtures = dataCache.fixtures;
-  const results = dataCache.results || {};
+  const fxs = dataCache.fixtures;
+  const resAll = dataCache.results || {};
 
-  fixtures.forEach(f => {
-    const res = results[f.tie_id];
-    const card = document.createElement("div");
-    card.className = "fixture-card";
-
-    let html = `
-      <div class="fixture-header">
-        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
-      </div>
-
-      <div class="result-row header">
-        <div>M</div><div></div><div>Winner</div><div></div><div>Opponent</div><div>Score</div>
-      </div>
-    `;
+  fxs.forEach(f=>{
+    const r = resAll[f.tie_id];
+    const card=document.createElement("div");
+    card.className="fixture-card";
+    let html=`<div class="fixture-header">${f.team_a} <span class="vs">vs</span> ${f.team_b}</div>
+      <div class="result-row header"><div>M</div><div></div><div>Winner</div><div></div><div>Opponent</div><div>Score</div></div>`;
 
     f.matches.forEach((pair,i)=>{
-      const m = res && res.matches[i];
-      if(!m || !m.sets){
-        html+=`
-          <div class="result-row pending">
-            <div>M${i+1}</div><div>⏳</div>
-            <div>Pending</div><div>vs</div>
-            <div>${pair[0]} / ${pair[1]}</div><div>—</div>
-          </div>`;
+      const m=r&&r.matches[i];
+      if(!m||!m.sets){
+        html+=`<div class="result-row pending"><div>M${i+1}</div><div>⏳</div><div>Pending</div><div>vs</div><div>${pair[0]} / ${pair[1]}</div><div>—</div></div>`;
         return;
       }
-
-      let a=0,b=0;
-      m.sets.forEach(s=>s[0]>s[1]?a++:b++);
-      const win=a>b?0:1;
-      const score=m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ");
-
-      html+=`
-        <div class="result-row">
-          <div>M${i+1}</div><div>🏆</div>
-          <div>${pair[win]}</div><div>vs</div>
-          <div>${pair[win?0:1]}</div><div>${score}</div>
-        </div>`;
+      let a=0,b=0;m.sets.forEach(s=>s[0]>s[1]?a++:b++);
+      const w=a>b?0:1;
+      html+=`<div class="result-row"><div>M${i+1}</div><div>🏆</div><div>${pair[w]}</div><div>vs</div><div>${pair[w?0:1]}</div><div>${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
     });
 
-    card.innerHTML = html;
+    card.innerHTML=html;
     grid.appendChild(card);
   });
 }
 
 /* ================= TEAM ================= */
 function renderTeamView() {
-  const container = document.getElementById("main-content");
-  container.innerHTML = `
-    <h2>Team Match Tracker</h2>
-    <select id="teamSelect"><option value="">Select team</option></select>
-    <div class="fixtures-grid" id="team-results"></div>
-  `;
-
-  const teams = new Set();
-  dataCache.fixtures.forEach(f=>{teams.add(f.team_a);teams.add(f.team_b);});
-  const sel=document.getElementById("teamSelect");
-  [...teams].forEach(t=>sel.innerHTML+=`<option>${t}</option>`);
-
+  const c=document.getElementById("main-content");
+  c.innerHTML=`<h2>Team Match Tracker</h2><select id="teamSel"></select><div class="fixtures-grid" id="team-grid"></div>`;
+  const sel=document.getElementById("teamSel");
+  [...new Set(dataCache.fixtures.flatMap(f=>[f.team_a,f.team_b]))].forEach(t=>sel.innerHTML+=`<option>${t}</option>`);
   sel.onchange=()=>showTeamMatches(sel.value);
 }
 
 function showTeamMatches(team){
-  const grid=document.getElementById("team-results");
-  grid.innerHTML="";
+  const g=document.getElementById("team-grid");g.innerHTML="";
   dataCache.fixtures.forEach(f=>{
-    if(f.team_a!==team && f.team_b!==team) return;
-    const card=document.createElement("div");
-    card.className="fixture-card";
-    card.innerHTML=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
-    grid.appendChild(card);
+    if(f.team_a!==team&&f.team_b!==team)return;
+    const r=dataCache.results[f.tie_id];
+    const c=document.createElement("div");c.className="fixture-card";
+    let h=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
+    f.matches.forEach((p,i)=>{
+      const m=r&&r.matches[i];
+      if(!m||!m.sets)h+=`<div class="match pending">M${i+1} ⏳ ${p[0]} vs ${p[1]}</div>`;
+      else{
+        let a=0,b=0;m.sets.forEach(s=>s[0]>s[1]?a++:b++);
+        h+=`<div class="match done">M${i+1} 🏆 ${p[a>b?0:1]} vs ${p[a>b?1:0]}<div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
+      }
+    });
+    c.innerHTML=h;g.appendChild(c);
   });
 }
 
 /* ================= PLAYER ================= */
 function renderPlayerView(){
-  const container=document.getElementById("main-content");
+  const c=document.getElementById("main-content");
+  c.innerHTML=`<h2>Player Match Tracker</h2><select id="pSel"></select><div class="fixtures-grid" id="pGrid"></div>`;
+  const sel=document.getElementById("pSel");
+  [...new Set(dataCache.fixtures.flatMap(f=>f.matches.flatMap(p=>p.join(" / ").split(" / "))))].forEach(p=>sel.innerHTML+=`<option>${p}</option>`);
+  sel.onchange=()=>showPlayerMatches(sel.value);
+}
+
+function showPlayerMatches(player){
+  const g=document.getElementById("pGrid");g.innerHTML="";
+  dataCache.fixtures.forEach(f=>{
+    const r=dataCache.results[f.tie_id];
+    f.matches.forEach((p,i)=>{
+      if(!p.join(" ").includes(player))return;
+      const c=document.createElement("div");c.className="fixture-card";
+      let h=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
+      const m=r&&r.matches[i];
+      if(!m||!m.sets)h+=`<div class="match pending">M${i+1} ⏳ ${p[0]} vs ${p[1]}</div>`;
+      else{
+        let a=0,b=0;m.sets.forEach(s=>s[0]>s[1]?a++:b++);
+        h+=`<div class="match done">M${i+1} 🏆 ${p[a>b?0:1]} vs ${p[a>b?1:0]}<div class="result-score">${m.sets.map(s=>`${s[0]}-${s[1]}`).join(" | ")}</div></div>`;
+      }
+      c.innerHTML=h;g.appendChild(c);
+    });
+  });
+}
+
+/* EXPORT */
+window.showFixtures=showFixtures;
+window.showResults=showResults;
+window.renderTeamView=renderTeamView;
+window.renderPlayerView=renderPlayerView;
+``
