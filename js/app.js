@@ -121,27 +121,18 @@ function renderFixtures() {
   const showCompleted = document.getElementById("completed").checked;
   const showPending = document.getElementById("pending").checked;
 
-  // ===== SUMMARY =====
-  let completedTotal = 0;
-  fixtures.forEach(f => {
-    const r = results[f.tie_id];
-    if (r) r.matches.forEach(m => m.sets && completedTotal++);
-  });
-
-  summary.innerHTML = `
-    <div class="summary">
-      📊 <strong>Fixtures Summary:</strong>
-      ${completedTotal} / ${fixtures.length * 3} matches completed
-    </div>
-  `;
+  // ===== FILTER-AWARE SUMMARY COUNTS =====
+  let visibleCompleted = 0;
+  let visiblePending = 0;
+  let visibleTotal = 0;
 
   fixtures.forEach(f => {
-    // Round filter
+    // ----- ROUND FILTER -----
     if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
 
     const r = results[f.tie_id];
 
-    // ===== COUNT STATES =====
+    // ----- COUNT STATES FOR STRICT FILTER -----
     let pendingCount = 0;
     let completedCount = 0;
 
@@ -151,7 +142,7 @@ function renderFixtures() {
       else completedCount++;
     });
 
-    // ===== STRICT FIXTURE FILTER =====
+    // ----- STRICT FIXTURE-LEVEL FILTER -----
     if (showPending && !showCompleted && completedCount > 0) return;
     if (showCompleted && !showPending && pendingCount > 0) return;
 
@@ -165,9 +156,8 @@ function renderFixtures() {
 
       <div class="result-row header">
         <div>M</div>
-        <div></div>
         <div>${f.team_a}</div>
-        <div></div>
+        <div>VS</div>
         <div>${f.team_b}</div>
         <div>Score</div>
       </div>
@@ -178,46 +168,65 @@ function renderFixtures() {
 
       // ===== PENDING MATCH =====
       if (!m || !m.sets) {
-        if (showPending) {
-          html += `
-            <div class="result-row pending">
-              <div>M${i + 1}</div>
-              <div>⏳</div>
-              <div>${pair[0]}</div>
-              <div>vs</div>
-              <div>${pair[1]}</div>
-              <div>—</div>
-            </div>
-          `;
-        }
+        if (!showPending) return;
+
+        visiblePending++;
+        visibleTotal++;
+
+        html += `
+          <div class="result-row pending">
+            <div>M${i + 1}</div>
+            <div>${pair[0]}</div>
+            <div>vs</div>
+            <div>${pair[1]}</div>
+            <div>—</div>
+          </div>
+        `;
         return;
       }
 
       // ===== COMPLETED MATCH =====
-      if (showCompleted) {
-        let a = 0, b = 0;
-        m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      if (!showCompleted) return;
 
-        const winnerSide = a > b ? 0 : 1;
-        const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const winnerSide = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
 
-        html += `
-          <div class="result-row">
-            <div>M${i + 1}</div>
-            <div>${winnerSide === 0 ? "🏆" : ""}</div>
-            <div>${pair[0]}</div>
-            <div>vs</div>
-            <div>${pair[1]}</div>
-            <div>${winnerSide === 1 ? "🏆" : ""}</div>
-            <div>${score}</div>
-          </div>
-        `;
-      }
+      visibleCompleted++;
+      visibleTotal++;
+
+      html += `
+        <div class="result-row">
+          <div>M${i + 1}</div>
+          <div>${winnerSide === 0 ? "🏆 " : ""}${pair[0]}</div>
+          <div>vs</div>
+          <div>${winnerSide === 1 ? "🏆 " : ""}${pair[1]}</div>
+          <div>${score}</div>
+        </div>
+      `;
     });
 
     card.innerHTML = html;
     grid.appendChild(card);
   });
+
+  // ===== SUMMARY TEXT (MATCHES FILTERED VIEW) =====
+  let summaryText = "";
+
+  if (showPending && !showCompleted) {
+    summaryText = `⏳ Pending: ${visiblePending} matches`;
+  } else if (showCompleted && !showPending) {
+    summaryText = `✅ Completed: ${visibleCompleted} matches`;
+  } else {
+    summaryText = `📊 Completed: ${visibleCompleted} / ${visibleTotal} matches`;
+  }
+
+  summary.innerHTML = `
+    <div class="summary">
+      ${summaryText}
+    </div>
+  `;
 }
 /**************************showresult*********************/
 function showResults() {
