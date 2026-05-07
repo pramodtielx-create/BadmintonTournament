@@ -989,8 +989,9 @@ function showStandings() {
 
   let html = `
     <h2>🏆 Team Standings</h2>
-    <div class="fixture-card">
-      <div class="result-row header">
+
+    <div class="fixture-card standings-wrapper">
+      <div class="standings-grid standings-header">
         <div>Team</div>
         <div>R</div>
         <div>P</div>
@@ -1009,7 +1010,7 @@ function showStandings() {
 
   standings.forEach((t, i) => {
     html += `
-      <div class="result-row">
+      <div class="standings-grid standings-row ${i < 2 ? "qualifier" : ""}">
         <div>${t.name}</div>
         <div>${i + 1}</div>
         <div>${t.played}</div>
@@ -1022,13 +1023,12 @@ function showStandings() {
         <div>${t.setDiff}</div>
         <div>${t.pointDiff}</div>
         <div>${t.leaguePoints}</div>
-        <div>${t.form}</div>
+        <div>${renderForm(t.form)}</div>
       </div>
     `;
   });
 
-  html += `</div>`;
-  c.innerHTML = html;
+  c.innerHTML = html + `</div>`;
 }
 
 
@@ -1115,37 +1115,37 @@ function computePlayerStandings() {
   );
 }
 
-function showPlayerStandings(showAll = false) {
-  const players = computePlayerStandings();
-  const list = showAll ? players : players.slice(0, 10);
 
+
+function showPlayerStandings(showAll = false) {
+  const players = computeIndividualPlayerStandings();
+  const list = showAll ? players : players.slice(0, 10);
   const c = document.getElementById("main-content");
 
   let html = `
     <h2>👤 Player Standings</h2>
     <p style="opacity:.7">Ranked by Wins → Set Diff → Point Diff → Played</p>
 
-    <label style="margin-bottom:12px;display:inline-block">
+    <label style="margin-bottom:12px;display:inline-flex;gap:6px">
       <input type="checkbox" ${showAll ? "checked" : ""}
         onchange="showPlayerStandings(this.checked)">
       Show All Players
     </label>
 
-    <div class="fixture-card">
+    <div class="fixture-card standings-wrapper">
       <div class="standings-grid standings-header">
-        <div>R</div>
         <div>Player</div>
-        <div>Team</div>
+        <div>R</div>
         <div>P</div>
         <div>W</div>
         <div>L</div>
-        <div>Win%</div>
         <div>SW</div>
         <div>SL</div>
-        <div>SD</div>
         <div>PW</div>
         <div>PL</div>
+        <div>SD</div>
         <div>PD</div>
+        <div>Win%</div>
         <div>Form</div>
       </div>
   `;
@@ -1153,26 +1153,26 @@ function showPlayerStandings(showAll = false) {
   list.forEach((p, i) => {
     html += `
       <div class="standings-grid standings-row">
-        <div>${i + 1}</div>
         <div>${p.name}</div>
-        <div>${p.team}</div>
+        <div>${i + 1}</div>
         <div>${p.played}</div>
         <div>${p.wins}</div>
         <div>${p.losses}</div>
-        <div>${p.winPct}</div>
         <div>${p.setsWon}</div>
         <div>${p.setsLost}</div>
-        <div>${p.setDiff}</div>
         <div>${p.pointsWon}</div>
         <div>${p.pointsLost}</div>
+        <div>${p.setDiff}</div>
         <div>${p.pointDiff}</div>
-        <div>${renderForm(p.form)}</div>
+        <div>${p.winPct}</div>
+        <div>${renderForm(p.recentForm.replace(/ /g, ""))}</div>
       </div>
     `;
   });
 
   c.innerHTML = html + `</div>`;
 }
+
 function computeIndividualPlayerStandings() {
   const fixtures = dataCache.fixtures;
   const results = dataCache.results || {};
