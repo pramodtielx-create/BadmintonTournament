@@ -1,3 +1,4 @@
+/* ================= GLOBAL RESET ================= */
 * {
   box-sizing: border-box;
   font-family: Inter, Arial, sans-serif;
@@ -9,16 +10,17 @@ body {
   color: #1f2937;
 }
 
-/* Header */
+/* ================= HEADER ================= */
 .header {
   padding: 18px 28px;
   background: linear-gradient(90deg, #0b132b, #1c2541);
   color: white;
 }
 
-/* Layout */
+/* ================= LAYOUT ================= */
 .container {
   display: flex;
+  min-height: 100vh;
 }
 
 .sidebar {
@@ -54,39 +56,39 @@ body {
   padding: 24px;
 }
 
-/* Filters */
+/* ================= FILTERS ================= */
 .filters {
   display: flex;
   gap: 20px;
   margin-bottom: 16px;
 }
 
-/* Summary */
+/* ================= SUMMARY ================= */
 .summary {
   background: #e8f1ff;
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 16px;
+  font-weight: 600;
 }
 
-/* Grid */
+/* ================= GRID ================= */
 .fixtures-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
   gap: 20px;
 }
 
-/* Cards */
+/* ================= CARD ================= */
 .fixture-card {
   background: white;
   padding: 18px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-}
-.fixture-card {
-  overflow-x: auto;   /* ✅ allow horizontal scroll if needed */
+  overflow-x: auto; /* ✅ safe scroll if needed */
 }
 
+/* ================= CARD HEADER ================= */
 .fixture-header {
   font-weight: 700;
   margin-bottom: 12px;
@@ -98,7 +100,64 @@ body {
   margin: 0 6px;
 }
 
-/* Match rows */
+/* ================= RESULT / FIXTURE ROW ================= */
+.result-row {
+  display: grid;
+  grid-template-columns:
+    48px                       /* M */
+    minmax(180px, 1.6fr)       /* Team A */
+    40px                       /* VS */
+    minmax(180px, 1.6fr)       /* Team B */
+    minmax(140px, 1fr);        /* Score */
+
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 14px;
+}
+
+/* ================= HEADER ROW ================= */
+.result-row.header {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* ================= PENDING ================= */
+.result-row.pending {
+  color: #f59e0b;
+}
+
+/* ================= VS COLUMN ================= */
+.result-row > div:nth-child(3) {
+  text-align: center;
+  font-weight: 600;
+  color: #f97316;
+}
+
+/* ================= GENERAL CELL ================= */
+.result-row > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ================= SCORE COLUMN (FINAL FIX) ================= */
+.result-row > div:last-child {
+  text-align: right;
+  font-family: monospace;
+  white-space: normal;        /* ✅ allow wrap */
+  overflow-wrap: anywhere;   /* ✅ force wrap */
+  line-height: 1.4;
+  max-width: 140px;
+}
+
+/* ================= MATCH STATES (LEGACY) ================= */
 .match {
   margin-bottom: 8px;
   font-size: 14px;
@@ -112,95 +171,3 @@ body {
 .match.pending {
   color: #f59e0b;
 }
-
-/* Results / Tracker row layout */
-/* ================= RESULT / FIXTURE TABLE ROW ================= */
-
-.result-row {
-  display: grid;
-  grid-template-columns: 
-    48px          /* M */
-    minmax(160px, 1.6fr) /* Team A */
-    40px          /* VS */
-    minmax(160px, 1.6fr) /* Team B */
-    minmax(120px, 1fr);  /* Score */
-
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #eef2f7;
-  font-size: 14px;
-}
-
-/* Header row */
-.result-row.header {
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-/* Pending row */
-.result-row.pending {
-  color: #f59e0b;
-}
-
-/* VS column */
-.result-row div:nth-child(3) {
-  text-align: center;
-  font-weight: 600;
-  color: #f97316;
-}
-
-/* Score column */
-.result-row div:last-child {
-  text-align: right;
-  font-family: monospace;
-  white-space: nowrap;
-}
-
-/* Trophy spacing */
-.result-row div {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.result-row div {
-  white-space: normal;
-  word-break: break-word;
-}
-
-.result-row div:nth-child(2),
-.result-row div:nth-child(4) {
-  min-width: 180px;
-}
-
-.col-winner {
-  font-weight: 700;
-  color: #16a34a;
-}
-
-.col-vs {
-  text-align: center;
-  color: #f97316;
-  font-weight: 700;
-}
-
-.col-score {
-  text-align: right;
-  font-family: monospace;
-}
-
-.result-row div:last-child {
-  text-align: right;
-  font-family: monospace;
-  white-space: normal;     /* ✅ allow wrapping */
-  word-break: break-word; /* ✅ keep inside column */
-  line-height: 1.4;
-}
-.result-row div:last-child {
-  max-width: 140px;
-}
-
