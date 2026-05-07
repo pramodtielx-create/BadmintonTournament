@@ -15,13 +15,14 @@ function renderFixtures() {
   const summary = document.getElementById("summary");
   grid.innerHTML = "";
 
-  const fixtures = dataCache.fixtures;
-  const results = dataCache.results || {};
-  let completed = 0;
-  fixtures.forEach(f => {
-    const r = results[f.tie_id];
-    if (r) r.matches.forEach(m => m.sets && completed++);
-  });
+const fixtures = dataCache.fixtures;
+const results = dataCache.results || {};
+
+let completed = 0;
+fixtures.forEach(f => {
+  const r = results[f.tie_id];
+  if (r) r.matches.forEach(m => m.sets && completed++);
+});
 
   summary.innerHTML = `
     <div class="summary">
