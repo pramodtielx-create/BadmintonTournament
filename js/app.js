@@ -10,6 +10,7 @@ async function init() {
 }
 init();
 
+/*===============================renderfixtures()=====================================*/
 function renderFixtures() {
   const grid = document.getElementById("fixtures-grid");
   const summary = document.getElementById("summary");
@@ -18,24 +19,43 @@ function renderFixtures() {
   const fixtures = dataCache.fixtures;
   const results = dataCache.results || {};
 
+  const showR1 = document.getElementById("r1").checked;
+  const showR2 = document.getElementById("r2").checked;
   const showCompleted = document.getElementById("completed").checked;
   const showPending = document.getElementById("pending").checked;
 
-  let completedCount = 0;
+  let completedTotal = 0;
   fixtures.forEach(f => {
     const r = results[f.tie_id];
-    if (r) r.matches.forEach(m => m.sets && completedCount++);
+    if (r) r.matches.forEach(m => m.sets && completedTotal++);
   });
 
   summary.innerHTML = `
     <div class="summary">
       📊 <strong>Fixtures Summary:</strong>
-      ${completedCount} / ${fixtures.length * 3} matches completed
+      ${completedTotal} / ${fixtures.length * 3} matches completed
     </div>
   `;
 
   fixtures.forEach(f => {
+    if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
+
     const r = results[f.tie_id];
+
+    // ✅ COUNT MATCH STATES
+    let pendingCount = 0;
+    let completedCount = 0;
+
+    f.matches.forEach((_, i) => {
+      const m = r && r.matches[i];
+      if (!m || !m.sets) pendingCount++;
+      else completedCount++;
+    });
+
+    // ✅ FIXTURE‑LEVEL FILTER (THIS IS THE KEY)
+    if (showPending && !showCompleted && completedCount > 0) return;
+    if (showCompleted && !showPending && pendingCount > 0) return;
+
     const card = document.createElement("div");
     card.className = "fixture-card";
 
@@ -45,51 +65,46 @@ function renderFixtures() {
       </div>
     `;
 
-let visibleMatchCount = 0;
+    f.matches.forEach((pair, i) => {
+      const m = r && r.matches[i];
 
-f.matches.forEach((pair, i) => {
-  const m = r && r.matches[i];
+      // ✅ PENDING MATCH
+      if (!m || !m.sets) {
+        if (!showPending) return;
 
-  // ===== PENDING =====
-  if (!m || !m.sets) {
-    if (!showPending) return;
+        html += `
+          <div class="match pending">
+            M${i + 1} ⏳
+            <div>${pair[0]}</div>
+            <div>vs ${pair[1]}</div>
+          </div>
+        `;
+        return;
+      }
 
-    visibleMatchCount++;
-    html += `
-      <div class="match pending">
-        M${i + 1} ⏳
-        <div>${pair[0]}</div>
-        <div>vs ${pair[1]}</div>
-      </div>
-    `;
-    return;
-  }
+      // ✅ COMPLETED MATCH
+      if (!showCompleted) return;
 
-  // ===== COMPLETED =====
-  if (!showCompleted) return;
+      let a = 0, b = 0;
+      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+      const w = a > b ? 0 : 1;
+      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
 
-  visibleMatchCount++;
+      html += `
+        <div class="match done">
+          M${i + 1} 🏆
+          <div>${pair[w]}</div>
+          <div>vs ${pair[w ? 0 : 1]}</div>
+          <div class="result-score">${score}</div>
+        </div>
+      `;
+    });
 
-  let a = 0, b = 0;
-  m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
-  const w = a > b ? 0 : 1;
-  const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
-
-  html += `
-    <div class="match done">
-      M${i + 1} 🏆
-      <div>${pair[w]}</div>
-      <div>vs ${pair[w ? 0 : 1]}</div>
-      <div class="result-score">${score}</div>
-    </div>
-  `;
-});
-
-// ✅ ONLY append card if something is visible
-if (visibleMatchCount > 0) {
-  card.innerHTML = html;
-  grid.appendChild(card);
+    card.innerHTML = html;
+    grid.appendChild(card);
+  });
 }
+
 
 
 /* ================= RESULTS ================= */
@@ -344,6 +359,7 @@ function showFixtures() {
 
   renderFixtures();
 }
+/*==================================renderfixes===============================*/
 function renderTeamView() {
   const c = document.getElementById("main-content");
 
