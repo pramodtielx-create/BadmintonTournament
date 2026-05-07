@@ -242,6 +242,7 @@ function showResults() {
   renderResults();
 }
 /* =================render RESULTS ================= */
+
 function renderResults() {
   const grid = document.getElementById("results-grid");
   grid.innerHTML = "";
@@ -255,12 +256,12 @@ function renderResults() {
   const showPending = document.getElementById("res-pending").checked;
 
   fixtures.forEach(f => {
-    // ✅ Round filter
+    // Round filter
     if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
 
     const r = results[f.tie_id];
 
-    // ✅ Count match states for strict filtering
+    // ===== COUNT STATES (STRICT FILTER) =====
     let pendingCount = 0;
     let completedCount = 0;
 
@@ -270,7 +271,6 @@ function renderResults() {
       else completedCount++;
     });
 
-    // ✅ Strict fixture-level filter (same as Fixtures)
     if (showPending && !showCompleted && completedCount > 0) return;
     if (showCompleted && !showPending && pendingCount > 0) return;
 
@@ -284,9 +284,8 @@ function renderResults() {
 
       <div class="result-row header">
         <div>M</div>
-        <div></div>
         <div>${f.team_a}</div>
-        <div></div>
+        <div>VS</div>
         <div>${f.team_b}</div>
         <div>Score</div>
       </div>
@@ -295,14 +294,13 @@ function renderResults() {
     f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
 
-      // ================= PENDING =================
+      // ===== PENDING =====
       if (!m || !m.sets) {
         if (!showPending) return;
 
         html += `
           <div class="result-row pending">
             <div>M${i + 1}</div>
-            <div>⏳</div>
             <div>${pair[0]}</div>
             <div>vs</div>
             <div>${pair[1]}</div>
@@ -312,28 +310,20 @@ function renderResults() {
         return;
       }
 
-      // ================= COMPLETED =================
+      // ===== COMPLETED =====
       if (!showCompleted) return;
 
       let a = 0, b = 0;
       m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
-
-      // ✅ 0 = left team wins, 1 = right team wins
       const winnerSide = a > b ? 0 : 1;
       const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
 
       html += `
         <div class="result-row">
           <div>M${i + 1}</div>
-
-          <div>${winnerSide === 0 ? "🏆" : ""}</div>
-          <div>${pair[0]}</div>
-
+          <div>${winnerSide === 0 ? "🏆 " : ""}${pair[0]}</div>
           <div>vs</div>
-
-          <div>${pair[1]}</div>
-          <div>${winnerSide === 1 ? "🏆" : ""}</div>
-
+          <div>${winnerSide === 1 ? "🏆 " : ""}${pair[1]}</div>
           <div>${score}</div>
         </div>
       `;
@@ -343,6 +333,8 @@ function renderResults() {
     grid.appendChild(card);
   });
 }
+
+
 /* ================= TEAM ================= */
 
 
