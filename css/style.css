@@ -193,3 +193,14 @@ body {
   font-family: monospace;
 }
 
+.result-row div:last-child {
+  text-align: right;
+  font-family: monospace;
+  white-space: normal;     /* ✅ allow wrapping */
+  word-break: break-word; /* ✅ keep inside column */
+  line-height: 1.4;
+}
+.result-row div:last-child {
+  max-width: 140px;
+}
+
