@@ -915,6 +915,19 @@ function initTeam(name) {
     form: []
   };
 }
+
+function renderForm(formString) {
+  // formString is like "WLWWL"
+  return formString
+    .split("")
+    .map(ch => {
+      if (ch === "W") return `<span class="form-W">W</span>`;
+      if (ch === "L") return `<span class="form-L">L</span>`;
+      return ch;
+    })
+    .join("");
+}
+
 function showStandings(round = null) {
   const standings = computeTeamStandings(round);
   const c = document.getElementById("main-content");
