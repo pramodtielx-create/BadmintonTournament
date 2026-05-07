@@ -189,12 +189,36 @@ function showTeamMatches(team) {
 }
 
 /* ================= PLAYER ================= */
-function renderPlayerView(){
-  const c=document.getElementById("main-content");
-  c.innerHTML=`<h2>Player Match Tracker</h2><select id="pSel"></select><div class="fixtures-grid" id="pGrid"></div>`;
-  const sel=document.getElementById("pSel");
-  [...new Set(dataCache.fixtures.flatMap(f=>f.matches.flatMap(p=>p.join(" / ").split(" / "))))].forEach(p=>sel.innerHTML+=`<option>${p}</option>`);
-  sel.onchange=()=>showPlayerMatches(sel.value);
+function renderPlayerView() {
+  const c = document.getElementById("main-content");
+
+  c.innerHTML = `
+    <div class="filters">
+      <label><input type="checkbox" id="p-r1" checked> Round 1</label>
+      <label><input type="checkbox" id="p-r2" checked> Round 2</label>
+      <label><input type="checkbox" id="p-completed" checked> Completed</label>
+      <label><input type="checkbox" id="p-pending" checked> Pending</label>
+    </div>
+
+    <h2>Player Match Tracker</h2>
+
+    <select id="playerSelect">
+      <option value="">Select player</option>
+    </select>
+
+    <div class="fixtures-grid" id="player-grid"></div>
+  `;
+
+  const sel = document.getElementById("playerSelect");
+  [...new Set(dataCache.fixtures.flatMap(f =>
+    f.matches.flatMap(p => p.join(" / ").split(" / "))
+  ))].forEach(p => sel.innerHTML += `<option>${p}</option>`);
+
+  sel.onchange = () => showPlayerMatches(sel.value);
+
+  ["p-r1","p-r2","p-completed","p-pending"].forEach(id =>
+    document.getElementById(id).onchange = () => showPlayerMatches(sel.value)
+  );
 }
 
 function showPlayerMatches(player) {
