@@ -225,3 +225,61 @@ body {
   font-weight: 700;
   margin-right: 4px;
 }
+/* ================= STANDINGS TABLE ================= */
+
+.standings-wrapper {
+  overflow-x: auto;
+}
+
+.standings-grid {
+  display: grid;
+  grid-template-columns:
+    200px  /* Team / Player */
+    50px   /* Rank */
+    60px   /* Played */
+    60px   /* Wins */
+    60px   /* Losses */
+    80px   /* Sets Won */
+    80px   /* Sets Lost */
+    100px  /* Points Won */
+    100px  /* Points Lost */
+    80px   /* Set Diff */
+    90px   /* Point Diff */
+    90px   /* League Pts / Win% */
+    140px; /* Recent Form */
+
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.standings-header {
+  font-weight: 700;
+  font-size: 12px;
+  color: #94a3b8;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 8px 0;
+}
+
+.standings-row {
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.standings-row.qualifier {
+  background: #ecfeff;
+  font-weight: 700;
+}
+
+/* Form colors */
+.form-W {
+  color: #16a34a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.form-L {
+  color: #dc2626;
+  font-weight: 700;
+  margin-right: 4px;
+}
