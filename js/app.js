@@ -45,43 +45,52 @@ function renderFixtures() {
       </div>
     `;
 
-    f.matches.forEach((pair, i) => {
-      const m = r && r.matches[i];
+let visibleMatchCount = 0;
 
-      if (!m || !m.sets) {
-        if (!showPending) return;
+f.matches.forEach((pair, i) => {
+  const m = r && r.matches[i];
 
-        html += `
-          <div class="match pending">
-            M${i + 1} ⏳
-            <div>${pair[0]}</div>
-            <div>vs ${pair[1]}</div>
-          </div>
-        `;
-        return;
-      }
+  // ===== PENDING =====
+  if (!m || !m.sets) {
+    if (!showPending) return;
 
-      if (!showCompleted) return;
+    visibleMatchCount++;
+    html += `
+      <div class="match pending">
+        M${i + 1} ⏳
+        <div>${pair[0]}</div>
+        <div>vs ${pair[1]}</div>
+      </div>
+    `;
+    return;
+  }
 
-      let a = 0, b = 0;
-      m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
-      const w = a > b ? 0 : 1;
-      const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+  // ===== COMPLETED =====
+  if (!showCompleted) return;
 
-      html += `
-        <div class="match done">
-          M${i + 1} 🏆
-          <div>${pair[w]}</div>
-          <div>vs ${pair[w ? 0 : 1]}</div>
-          <div class="result-score">${score}</div>
-        </div>
-      `;
-    });
+  visibleMatchCount++;
 
-    card.innerHTML = html;
-    grid.appendChild(card);
-  });
+  let a = 0, b = 0;
+  m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+  const w = a > b ? 0 : 1;
+  const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
+
+  html += `
+    <div class="match done">
+      M${i + 1} 🏆
+      <div>${pair[w]}</div>
+      <div>vs ${pair[w ? 0 : 1]}</div>
+      <div class="result-score">${score}</div>
+    </div>
+  `;
+});
+
+// ✅ ONLY append card if something is visible
+if (visibleMatchCount > 0) {
+  card.innerHTML = html;
+  grid.appendChild(card);
 }
+
 
 /* ================= RESULTS ================= */
 function showResults() {
