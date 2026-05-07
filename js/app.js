@@ -121,16 +121,26 @@ function renderFixtures() {
   const showCompleted = document.getElementById("completed").checked;
   const showPending = document.getElementById("pending").checked;
 
-  // ===== SUMMARY COUNTS (VISIBLE ONLY) =====
-  let visibleCompleted = 0;
-  let visiblePending = 0;
-  let visibleTotal = 0;
+  /* ================= GLOBAL SUMMARY (ENTIRE TOURNAMENT) ================= */
+  let totalCompleted = 0;
+  let totalPending = 0;
 
+  fixtures.forEach(f => {
+    const r = results[f.tie_id];
+    f.matches.forEach((_, i) => {
+      const m = r && r.matches[i];
+      if (!m || !m.sets) totalPending++;
+      else totalCompleted++;
+    });
+  });
+
+  /* ================= FIXTURES ================= */
   fixtures.forEach(f => {
     // Round filter
     if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
 
     const r = results[f.tie_id];
+
     const card = document.createElement("div");
     card.className = "fixture-card";
 
@@ -153,12 +163,10 @@ function renderFixtures() {
     f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
 
-      // ===== PENDING =====
+      /* ================= PENDING MATCH ================= */
       if (!m || !m.sets) {
         if (!showPending) return;
 
-        visiblePending++;
-        visibleTotal++;
         visibleMatchCount++;
 
         html += `
@@ -173,16 +181,15 @@ function renderFixtures() {
         return;
       }
 
-      // ===== COMPLETED =====
+      /* ================= COMPLETED MATCH ================= */
       if (!showCompleted) return;
 
       let a = 0, b = 0;
       m.sets.forEach(s => (s[0] > s[1] ? a++ : b++));
+
       const winnerSide = a > b ? 0 : 1;
       const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
 
-      visibleCompleted++;
-      visibleTotal++;
       visibleMatchCount++;
 
       html += `
@@ -196,22 +203,22 @@ function renderFixtures() {
       `;
     });
 
-    // ✅ SHOW TIE ONLY IF AT LEAST ONE MATCH IS VISIBLE
+    // ✅ Show tie ONLY if at least one match is visible
     if (visibleMatchCount > 0) {
       card.innerHTML = html;
       grid.appendChild(card);
     }
   });
 
-  // ===== SUMMARY (FILTER‑AWARE) =====
+  /* ================= SUMMARY RENDER ================= */
   let summaryText = "";
 
   if (showPending && !showCompleted) {
-    summaryText = `⏳ Pending: ${visiblePending} matches`;
+    summaryText = `⏳ Pending: ${totalPending} matches`;
   } else if (showCompleted && !showPending) {
-    summaryText = `✅ Completed: ${visibleCompleted} matches`;
+    summaryText = `✅ Completed: ${totalCompleted} matches`;
   } else {
-    summaryText = `📊 Completed: ${visibleCompleted} / ${visibleTotal} matches`;
+    summaryText = `📊 Completed: ${totalCompleted} / ${totalCompleted + totalPending} matches`;
   }
 
   summary.innerHTML = `
