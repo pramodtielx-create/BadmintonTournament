@@ -101,22 +101,7 @@ body {
 }
 
 /* ================= RESULT / FIXTURE ROW ================= */
-
-/*.result-row {
-  display: grid;
-  grid-template-columns:
-    48px                  /* M */
-    1.6fr                 /* Team A */
-    40px                  /* VS */
-    1.6fr                 /* Team B */
-    110px;                /* Score (FIXED) */
-
-/*  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #eef2f7;
-  font-size: 14px;*/
-result-row {
+.result-row {
   display: grid;
   grid-template-columns:
     48px                       /* M */
@@ -130,7 +115,6 @@ result-row {
   padding: 8px 0;
   border-bottom: 1px solid #eef2f7;
   font-size: 14px;
-}
 }
 
 /* ================= HEADER ROW ================= */
