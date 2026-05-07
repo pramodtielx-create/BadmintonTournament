@@ -192,3 +192,35 @@ function showResults() {
 /* ================= EXPOSE FUNCTIONS ================= */
 window.showFixtures = showFixtures;
 window.showResults = showResults;
+/* ================= TEAM ================= */
+function renderTeamView() {
+  const container = document.getElementById("main-content");
+  container.innerHTML = `
+    <h2>Team Match Tracker</h2>
+    <select id="teamSelect"><option value="">Select team</option></select>
+    <div class="fixtures-grid" id="team-results"></div>
+  `;
+
+  const teams = new Set();
+  dataCache.fixtures.forEach(f=>{teams.add(f.team_a);teams.add(f.team_b);});
+  const sel=document.getElementById("teamSelect");
+  [...teams].forEach(t=>sel.innerHTML+=`<option>${t}</option>`);
+
+  sel.onchange=()=>showTeamMatches(sel.value);
+}
+
+function showTeamMatches(team){
+  const grid=document.getElementById("team-results");
+  grid.innerHTML="";
+  dataCache.fixtures.forEach(f=>{
+    if(f.team_a!==team && f.team_b!==team) return;
+    const card=document.createElement("div");
+    card.className="fixture-card";
+    card.innerHTML=`<div class="fixture-header">${f.team_a} vs ${f.team_b}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ================= PLAYER ================= */
+function renderPlayerView(){
+  const container=document.getElementById("main-content");
