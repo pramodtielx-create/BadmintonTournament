@@ -121,31 +121,16 @@ function renderFixtures() {
   const showCompleted = document.getElementById("completed").checked;
   const showPending = document.getElementById("pending").checked;
 
-  // ===== FILTER-AWARE SUMMARY COUNTS =====
+  // ===== SUMMARY COUNTS (VISIBLE ONLY) =====
   let visibleCompleted = 0;
   let visiblePending = 0;
   let visibleTotal = 0;
 
   fixtures.forEach(f => {
-    // ----- ROUND FILTER -----
+    // Round filter
     if ((f.round_no === 1 && !showR1) || (f.round_no === 2 && !showR2)) return;
 
     const r = results[f.tie_id];
-
-    // ----- COUNT STATES FOR STRICT FILTER -----
-    let pendingCount = 0;
-    let completedCount = 0;
-
-    f.matches.forEach((_, i) => {
-      const m = r && r.matches[i];
-      if (!m || !m.sets) pendingCount++;
-      else completedCount++;
-    });
-
-    // ----- STRICT FIXTURE-LEVEL FILTER -----
-    if (showPending && !showCompleted && completedCount > 0) return;
-    if (showCompleted && !showPending && pendingCount > 0) return;
-
     const card = document.createElement("div");
     card.className = "fixture-card";
 
@@ -163,15 +148,18 @@ function renderFixtures() {
       </div>
     `;
 
+    let visibleMatchCount = 0;
+
     f.matches.forEach((pair, i) => {
       const m = r && r.matches[i];
 
-      // ===== PENDING MATCH =====
+      // ===== PENDING =====
       if (!m || !m.sets) {
         if (!showPending) return;
 
         visiblePending++;
         visibleTotal++;
+        visibleMatchCount++;
 
         html += `
           <div class="result-row pending">
@@ -185,7 +173,7 @@ function renderFixtures() {
         return;
       }
 
-      // ===== COMPLETED MATCH =====
+      // ===== COMPLETED =====
       if (!showCompleted) return;
 
       let a = 0, b = 0;
@@ -195,6 +183,7 @@ function renderFixtures() {
 
       visibleCompleted++;
       visibleTotal++;
+      visibleMatchCount++;
 
       html += `
         <div class="result-row">
@@ -207,11 +196,14 @@ function renderFixtures() {
       `;
     });
 
-    card.innerHTML = html;
-    grid.appendChild(card);
+    // ✅ SHOW TIE ONLY IF AT LEAST ONE MATCH IS VISIBLE
+    if (visibleMatchCount > 0) {
+      card.innerHTML = html;
+      grid.appendChild(card);
+    }
   });
 
-  // ===== SUMMARY TEXT (MATCHES FILTERED VIEW) =====
+  // ===== SUMMARY (FILTER‑AWARE) =====
   let summaryText = "";
 
   if (showPending && !showCompleted) {
@@ -228,6 +220,7 @@ function renderFixtures() {
     </div>
   `;
 }
+
 /**************************showresult*********************/
 function showResults() {
   const c = document.getElementById("main-content");
