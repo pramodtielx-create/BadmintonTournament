@@ -1,6 +1,6 @@
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
-/* let dataCache = null */
+let dataCache = null
 
 /* INIT */
 async function init() {
@@ -16,7 +16,7 @@ function renderFixtures() {
   grid.innerHTML = "";
 
   const fixtures = dataCache.fixtures;
-  const results = dataCache.results || {};
+  const results = .results || {};
 
   let completed = 0;
   fixtures.forEach(f => {
