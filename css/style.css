@@ -147,3 +147,8 @@ body {
   text-align: right;
   font-family: monospace;
 }
+.result-row div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
