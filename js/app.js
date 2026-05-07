@@ -637,7 +637,7 @@ window.showResults = showResults;
 window.renderTeamView = renderTeamView;
 window.renderPlayerView = renderPlayerView;
 window.showStandings = showStandings;
-
+window.showPlayerStandings = showPlayerStand;
 
 
 
@@ -982,7 +982,7 @@ function showStandings(round = null) {
 
   c.innerHTML = html + `</div>`;
 }
-/*
+
 function showStandings() {
   const standings = computeTeamStandings();
   const c = document.getElementById("main-content");
@@ -1030,7 +1030,7 @@ function showStandings() {
   html += `</div>`;
   c.innerHTML = html;
 }
-*/
+
 
 function computePlayerStandings() {
   const fixtures = dataCache.fixtures;
@@ -1167,6 +1167,176 @@ function showPlayerStandings(showAll = false) {
         <div>${p.pointsLost}</div>
         <div>${p.pointDiff}</div>
         <div>${renderForm(p.form)}</div>
+      </div>
+    `;
+  });
+
+  c.innerHTML = html + `</div>`;
+}
+function computeIndividualPlayerStandings() {
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+
+  const stats = {};
+
+  // Helper to init player
+  function initPlayer(name, team) {
+    return {
+      name,
+      team,
+      played: 0,
+      wins: 0,
+      losses: 0,
+      setsWon: 0,
+      setsLost: 0,
+      pointsWon: 0,
+      pointsLost: 0,
+      setDiff: 0,
+      pointDiff: 0,
+      winPct: 0,
+      form: []
+    };
+  }
+
+  // Assign teams to players (same as Python teams_data loop)
+  fixtures.forEach(f => {
+    f.matches.forEach(pair => {
+      pair[0].split("/").forEach(p => {
+        const name = p.trim();
+        stats[name] ??= initPlayer(name, f.team_a);
+      });
+      pair[1].split("/").forEach(p => {
+        const name = p.trim();
+        stats[name] ??= initPlayer(name, f.team_b);
+      });
+    });
+  });
+
+  // Process results
+  Object.entries(results).forEach(([tieId, r]) => {
+    const fixture = fixtures.find(f => f.tie_id === tieId);
+    if (!fixture) return;
+
+    r.matches.forEach((m, idx) => {
+      if (!m || !m.sets) return;
+
+      const [pairA, pairB] = fixture.matches[idx];
+      const teamAPlayers = pairA.split("/").map(p => p.trim());
+      const teamBPlayers = pairB.split("/").map(p => p.trim());
+
+      let aSets = 0, bSets = 0, aPts = 0, bPts = 0;
+
+      m.sets.forEach(([a, b]) => {
+        aPts += a;
+        bPts += b;
+        a > b ? aSets++ : bSets++;
+      });
+
+      // Team A players
+      teamAPlayers.forEach(p => {
+        const s = stats[p];
+        s.played++;
+        s.setsWon += aSets;
+        s.setsLost += bSets;
+        s.pointsWon += aPts;
+        s.pointsLost += bPts;
+        if (aSets > bSets) {
+          s.wins++;
+          s.form.push("W");
+        } else {
+          s.losses++;
+          s.form.push("L");
+        }
+      });
+
+      // Team B players
+      teamBPlayers.forEach(p => {
+        const s = stats[p];
+        s.played++;
+        s.setsWon += bSets;
+        s.setsLost += aSets;
+        s.pointsWon += bPts;
+        s.pointsLost += aPts;
+        if (bSets > aSets) {
+          s.wins++;
+          s.form.push("W");
+        } else {
+          s.losses++;
+          s.form.push("L");
+        }
+      });
+    });
+  });
+
+  // Final calculations
+  Object.values(stats).forEach(p => {
+    p.setDiff = p.setsWon - p.setsLost;
+    p.pointDiff = p.pointsWon - p.pointsLost;
+    p.winPct = p.played > 0 ? Math.round((p.wins / p.played) * 100) : 0;
+    p.recentForm = p.form.slice(-5).join(" ");
+    delete p.form;
+  });
+
+  // Sort exactly like Streamlit
+  return Object.values(stats).sort((a, b) =>
+    b.wins - a.wins ||
+    b.setDiff - a.setDiff ||
+    b.pointDiff - a.pointDiff ||
+    a.played - b.played ||
+    a.name.localeCompare(b.name)
+  );
+}
+function showPlayerStandings(showAll = false) {
+  const players = computeIndividualPlayerStandings();
+  const list = showAll ? players : players.slice(0, 10);
+  const c = document.getElementById("main-content");
+
+  let html = `
+    <h2>👤 Player Standings</h2>
+    <p style="opacity:.7">Ranked based on Wins → Set Diff → Point Diff → Played</p>
+
+    <label style="display:inline-flex;gap:6px;margin-bottom:12px">
+      <input type="checkbox" ${showAll ? "checked" : ""}
+        onchange="showPlayerStandings(this.checked)">
+      Show All Players
+    </label>
+
+    <div class="fixture-card">
+      <div class="standings-grid standings-header">
+        <div>R</div>
+        <div>Player</div>
+        <div>Team</div>
+        <div>P</div>
+        <div>W</div>
+        <div>L</div>
+        <div>Win%</div>
+        <div>SW</div>
+        <div>SL</div>
+        <div>SD</div>
+        <div>PW</div>
+        <div>PL</div>
+        <div>PD</div>
+        <div>Recent Form</div>
+      </div>
+  `;
+
+  list.forEach((p, i) => {
+    html += `
+      <div class="standings-grid standings-row">
+        <div>${i + 1}</div>
+        <div>${p.name}</div>
+        <div>${p.team}</div>
+        <div>${p.played}</div>
+        <div>${p.wins}</div>
+        <div>${p.losses}</div>
+        <div>${p.winPct}</div>
+        <div>${p.setsWon}</div>
+        <div>${p.setsLost}</div>
+        <div>${p.setDiff}</div>
+        <div>${p.pointsWon}</div>
+        <div>${p.pointsLost}</div>
+        <div>${p.pointDiff}</div>
+        <div>${renderForm(p.recentForm.replace(/ /g, ""))}</div>
       </div>
     `;
   });
