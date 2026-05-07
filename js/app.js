@@ -16,8 +16,7 @@ function renderFixtures() {
   grid.innerHTML = "";
 
   const fixtures = dataCache.fixtures;
-  const results = .results || {};
-
+  const results = dataCache.results || {};
   let completed = 0;
   fixtures.forEach(f => {
     const r = results[f.tie_id];
