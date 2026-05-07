@@ -106,7 +106,8 @@ init();
 }*/
 
 function renderFixtures() {
-  const grid = return;  const grid = document.getElementById("fixtures-grid");
+  /*const grid = return; */
+  const grid = document.getElementById("fixtures-grid");
 
     const r = results[f.tie_id];
 
