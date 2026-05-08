@@ -119,11 +119,7 @@ function showPlayerStandings(showAll = false) {
   let html = `
     <h2>Player Standings</h2>
 
-    <label>
-      <input type="checkbox" ${showAll ? "checked" : ""}
-        onchange="showPlayerStandings(this.checked)">
-      Show All Players
-    </label>
+   
 
     <div class="fixture-card standings-wrapper">
       <div class="standings-grid standings-header">
