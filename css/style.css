@@ -273,3 +273,52 @@ body {
   background: #ecfeff;
   font-weight: 700;
 }
+/* ================= PLAYER STANDINGS COLORING ================= */
+
+/* Rank emphasis */
+.standings-row:nth-child(2) {
+  font-weight: 700;
+}
+.standings-row:nth-child(3) {
+  font-weight: 700;
+}
+
+/* Wins & Win% */
+.standings-row > div:nth-child(5),
+.standings-row > div:nth-child(7) {
+  color: #16a34a; /* green */
+  font-weight: 600;
+}
+
+/* Losses */
+.standings-row > div:nth-child(6) {
+  color: #dc2626; /* red */
+  font-weight: 600;
+}
+
+/* Set Diff & Point Diff coloring */
+.standings-row > div:nth-child(10),
+.standings-row > div:nth-child(13) {
+  font-weight: 600;
+}
+
+.standings-row > div:nth-child(10):not(:empty):not(:contains("-")),
+.standings-row > div:nth-child(13):not(:empty):not(:contains("-")) {
+  color: #16a34a; /* positive diff */
+}
+
+.standings-row > div:nth-child(10):contains("-"),
+.standings-row > div:nth-child(13):contains("-") {
+  color: #dc2626; /* negative diff */
+}
+
+/* Recent Form letters */
+.form-W {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.form-L {
+  color: #dc2626;
+  font-weight: 700;
+}
