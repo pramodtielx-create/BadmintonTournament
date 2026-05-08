@@ -283,3 +283,45 @@ body {
   font-weight: 700;
   margin-right: 4px;
 }
+/* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+  /* Reduce page padding */
+  .content {
+    padding: 12px;
+  }
+
+  /* Filters stack vertically */
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Standings: allow horizontal scroll on mobile */
+  .standings-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Slightly smaller text */
+  .standings-grid {
+    font-size: 12px;
+    min-width: 900px; /* IMPORTANT: prevents column collapse */
+  }
+
+  /* Reduce row height */
+  .standings-row,
+  .standings-header {
+    padding: 6px 0;
+  }
+
+  /* Reduce column gaps */
+  .standings-grid {
+    gap: 6px;
+  }
+
+  /* Player / Team name wrap better */
+  .standings-grid > div {
+    white-space: nowrap;
+  }
+}
