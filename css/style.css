@@ -227,6 +227,8 @@ body {
 }
 /* ================= STANDINGS TABLE ================= */
 
+/* ================= STANDINGS TABLE (FINAL) ================= */
+
 .standings-wrapper {
   overflow-x: auto;
 }
@@ -234,19 +236,20 @@ body {
 .standings-grid {
   display: grid;
   grid-template-columns:
-    200px  /* Team / Player */
-    50px   /* Rank */
-    60px   /* Played */
-    60px   /* Wins */
-    60px   /* Losses */
-    80px   /* Sets Won */
-    80px   /* Sets Lost */
-    100px  /* Points Won */
-    100px  /* Points Lost */
-    80px   /* Set Diff */
-    90px   /* Point Diff */
-    90px   /* League Pts / Win% */
-    140px; /* Recent Form */
+    50px    /* Rank */
+    160px   /* Player */
+    180px   /* Team */
+    60px    /* Played */
+    60px    /* Wins */
+    60px    /* Losses */
+    70px    /* Win % */
+    70px    /* Sets Won */
+    70px    /* Sets Lost */
+    70px    /* Set Diff */
+    90px    /* Points Won */
+    90px    /* Points Lost */
+    90px    /* Point Diff */
+    140px;  /* Recent Form */
 
   align-items: center;
   gap: 8px;
@@ -269,17 +272,4 @@ body {
 .standings-row.qualifier {
   background: #ecfeff;
   font-weight: 700;
-}
-
-/* Form colors */
-.form-W {
-  color: #16a34a;
-  font-weight: 700;
-  margin-right: 4px;
-}
-
-.form-L {
-  color: #dc2626;
-  font-weight: 700;
-  margin-right: 4px;
 }
