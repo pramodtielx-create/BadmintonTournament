@@ -1170,7 +1170,8 @@ function showPlayerStandings(showAll = false) {
     `;
   });
 
-  c.innerHTML = html + `</div>`;
+ /* c.innerHTML = html + `</div>`;*/
+  c.innerHTML = `<div class="player-standings">${html}</div>`;
 }
 
 function computeIndividualPlayerStandings() {
