@@ -1,13 +1,17 @@
 const API_URL =
-  "div>  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
-        <div>${t.leaguePoints}</div>
-        <div>${renderForm(t.form)}</div>
-      </div>
-    `;
-  });
+  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
 
-  c.innerHTML = html + `</div>`;
+let dataCache = null;
+
+/* INIT */
+async function init() {
+  const res = await fetch(API_URL);
+  dataCache = await res.json();
+  showFixtures();
 }
+
+init();
+
 
 /* ========== PLAYER STANDINGS ========== */
 function showPlayerStandings(showAll = false) {
