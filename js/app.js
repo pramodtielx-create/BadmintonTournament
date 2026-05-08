@@ -205,7 +205,106 @@ function initTeam(name) {
 }
 
 function computeIndividualPlayerStandings() {
-  return [];
+  const fixtures = dataCache.fixtures;
+  const results = dataCache.results || {};
+  const players = {};
+
+  function initPlayer(name, team) {
+    return {
+      name,
+      team,
+      played: 0,
+      wins: 0,
+      losses: 0,
+      setsWon: 0,
+      setsLost: 0,
+      pointsWon: 0,
+      pointsLost: 0,
+      setDiff: 0,
+      pointDiff: 0,
+      winPct: 0,
+      recentForm: []
+    };
+  }
+
+  fixtures.forEach(f => {
+    const res = results[f.tie_id];
+    if (!res) return;
+
+    f.matches.forEach((pair, idx) => {
+      const m = res.matches[idx];
+      if (!m || !m.sets) return;
+
+      // ✅ Split doubles into individual players
+      const teamAPlayers = pair[0].split("/").map(p => p.trim());
+      const teamBPlayers = pair[1].split("/").map(p => p.trim());
+
+      teamAPlayers.forEach(p => {
+        players[p] ??= initPlayer(p, f.team_a);
+      });
+      teamBPlayers.forEach(p => {
+        players[p] ??= initPlayer(p, f.team_b);
+      });
+
+      let setsA = 0, setsB = 0;
+      let ptsA = 0, ptsB = 0;
+
+      m.sets.forEach(([a, b]) => {
+        ptsA += a;
+        ptsB += b;
+        a > b ? setsA++ : setsB++;
+      });
+
+      // ✅ Update Team A players
+      teamAPlayers.forEach(p => {
+        const pl = players[p];
+        pl.played++;
+        pl.setsWon += setsA;
+        pl.setsLost += setsB;
+        pl.pointsWon += ptsA;
+        pl.pointsLost += ptsB;
+        if (setsA > setsB) {
+          pl.wins++;
+          pl.recentForm.push("W");
+        } else {
+          pl.losses++;
+          pl.recentForm.push("L");
+        }
+      });
+
+      // ✅ Update Team B players
+      teamBPlayers.forEach(p => {
+        const pl = players[p];
+        pl.played++;
+        pl.setsWon += setsB;
+        pl.setsLost += setsA;
+        pl.pointsWon += ptsB;
+        pl.pointsLost += ptsA;
+        if (setsB > setsA) {
+          pl.wins++;
+          pl.recentForm.push("W");
+        } else {
+          pl.losses++;
+          pl.recentForm.push("L");
+        }
+      });
+    });
+  });
+
+  Object.values(players).forEach(p => {
+    p.setDiff = p.setsWon - p.setsLost;
+    p.pointDiff = p.pointsWon - p.pointsLost;
+    p.winPct = p.played ? Math.round((p.wins / p.played) * 100) : 0;
+    p.recentForm = p.recentForm.slice(-5).join(" ");
+  });
+
+  return Object.values(players).sort((a, b) =>
+    b.wins - a.wins ||
+    b.setDiff - a.setDiff ||
+    b.pointDiff - a.pointDiff ||
+    a.played - b.played ||
+    a.name.localeCompare(b.name)
+  );
 }
 
 function renderForm(form) {
