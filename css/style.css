@@ -329,60 +329,32 @@ body {
    PLAYER STANDINGS (ISOLATED & SAFE)
    ===================================================== */
 
-.player-standings .standings-wrapper {
-  overflow-x: auto;
-}
-
 .player-standings .standings-grid {
-  display: grid;
   grid-template-columns:
-    50px    /* Rank */
-    160px   /* Player */
-    180px   /* Team */
-    60px    /* Played */
-    60px    /* Wins */
-    60px    /* Losses */
-    70px    /* Win % */
-    70px    /* Sets Won */
-    70px    /* Sets Lost */
-    70px    /* Set Diff */
-    90px    /* Points Won */
-    90px    /* Points Lost */
-    90px    /* Point Diff */
-    140px;  /* Recent Form */
-
-  align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
+    50px
+    160px
+    180px
+    60px
+    60px
+    60px
+    70px
+    70px
+    70px
+    70px
+    90px
+    90px
+    90px
+    140px;
 }
 
-.player-standings .standings-header {
-  font-weight: 700;
-  font-size: 12px;
-  color: #94a3b8;
-  border-bottom: 2px solid #e5e7eb;
-  padding: 8px 0;
-}
-
-.player-standings .standings-row {
-  padding: 8px 0;
-  border-bottom: 1px solid #eef2f7;
-}
-
-/* ✅ Rank emphasis (safe) */
-.player-standings .standings-row.rank-1 {
+.player-standings .rank-1 {
   background: #fff7ed;
-  font-weight: 700;
 }
-
-.player-standings .standings-row.rank-2 {
+.player-standings .rank-2 {
   background: #f8fafc;
-  font-weight: 700;
 }
-
-.player-standings .standings-row.rank-3 {
+.player-standings .rank-3 {
   background: #fefce8;
-  font-weight: 700;
 }
 
 /* ✅ Recent Form coloring (ONLY here) */
