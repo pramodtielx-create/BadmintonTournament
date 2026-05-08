@@ -59,7 +59,7 @@ body {
 /* ================= FILTERS ================= */
 .filters {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   margin-bottom: 16px;
 }
 
@@ -72,10 +72,10 @@ body {
   font-weight: 600;
 }
 
-/* ================= FIXTURES GRID ================= */
+/* ================= GRID ================= */
 .fixtures-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(580px, 1fr));
   gap: 20px;
 }
 
@@ -85,10 +85,10 @@ body {
   padding: 18px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-  overflow: hidden;
+  overflow-x: auto; /* ✅ safe scroll if needed */
 }
 
-/* ================= FIXTURE HEADER ================= */
+/* ================= CARD HEADER ================= */
 .fixture-header {
   font-weight: 700;
   margin-bottom: 12px;
@@ -97,50 +97,135 @@ body {
 .vs {
   color: #f97316;
   font-weight: 700;
+  margin: 0 6px;
 }
 
-/* ================= MATCH ROW ================= */
+/* ================= RESULT / FIXTURE ROW ================= */
 .result-row {
   display: grid;
-  grid-template-columns: 40px 1fr 30px 1fr 110px;
-  gap: 6px;
-  padding: 6px 0;
+  grid-template-columns:
+    48px                       /* M */
+    minmax(180px, 1.6fr)       /* Team A */
+    40px                       /* VS */
+    minmax(180px, 1.6fr)       /* Team B */
+    minmax(140px, 1fr);        /* Score */
+
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid #eef2f7;
-  font-size: 13.5px;
-  align-items: start;
+  font-size: 14px;
 }
 
+/* ================= HEADER ROW ================= */
 .result-row.header {
-  font-size: 12px;
   font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
   color: #94a3b8;
   border-bottom: 2px solid #e5e7eb;
 }
 
+/* ================= PENDING ================= */
 .result-row.pending {
   color: #f59e0b;
 }
 
+/* ================= VS COLUMN ================= */
 .result-row > div:nth-child(3) {
   text-align: center;
-  color: #f97316;
   font-weight: 600;
+  color: #f97316;
 }
 
+/* ================= GENERAL CELL ================= */
+.result-row > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ================= SCORE COLUMN (FINAL FIX) ================= */
 .result-row > div:last-child {
   text-align: right;
   font-family: monospace;
-  line-height: 1.2;
-  overflow-wrap: anywhere;
+  white-space: normal;        /* ✅ allow wrap */
+  overflow-wrap: anywhere;   /* ✅ force wrap */
+  line-height: 1.4;
+  max-width: 140px;
 }
 
-/* Winner highlight */
-.winner {
-  color: #dc2626;
+/* ================= MATCH STATES (LEGACY) ================= */
+.match {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.match.done {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.match.pending {
+  color: #f59e0b;
+}
+/* ================= TEAM STANDINGS TABLE ================= */
+
+.standings-grid {
+  display: grid;
+  grid-template-columns:
+    200px  /* Team */
+    50px   /* Rank */
+    60px   /* Played */
+    60px   /* Wins */
+    60px   /* Losses */
+    80px   /* Sets Won */
+    80px   /* Sets Lost */
+    100px  /* Points Won */
+    100px  /* Points Lost */
+    80px   /* Set Diff */
+    90px   /* Point Diff */
+    90px   /* League Pts */
+    120px; /* Recent Form */
+
+  gap: 8px;
+  align-items: center;
+  font-size: 13.5px;
+}
+
+.standings-header {
+  font-weight: 700;
+  font-size: 12px;
+  color: #94a3b8;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+.standings-row {
+  padding: 6px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.standings-row.qualifier {
+  background: #ecfeff;
   font-weight: 700;
 }
 
-/* ================= TEAM STANDINGS ================= */
+/* Form colors */
+.form-W {
+  color: #16a34a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.form-L {
+  color: #dc2626;
+  font-weight: 700;
+  margin-right: 4px;
+}
+/* ================= STANDINGS TABLE ================= */
 
 .standings-wrapper {
   overflow-x: auto;
@@ -149,19 +234,19 @@ body {
 .standings-grid {
   display: grid;
   grid-template-columns:
-    200px  /* Team */
+    200px  /* Team / Player */
     50px   /* Rank */
-    60px   /* P */
-    60px   /* W */
-    60px   /* L */
-    80px   /* SW */
-    80px   /* SL */
-    100px  /* PW */
-    100px  /* PL */
-    80px   /* SD */
-    90px   /* PD */
-    90px   /* Pts */
-    140px; /* Form */
+    60px   /* Played */
+    60px   /* Wins */
+    60px   /* Losses */
+    80px   /* Sets Won */
+    80px   /* Sets Lost */
+    100px  /* Points Won */
+    100px  /* Points Lost */
+    80px   /* Set Diff */
+    90px   /* Point Diff */
+    90px   /* League Pts / Win% */
+    140px; /* Recent Form */
 
   align-items: center;
   gap: 8px;
@@ -169,8 +254,8 @@ body {
 }
 
 .standings-header {
-  font-size: 12px;
   font-weight: 700;
+  font-size: 12px;
   color: #94a3b8;
   border-bottom: 2px solid #e5e7eb;
   padding: 8px 0;
@@ -186,61 +271,129 @@ body {
   font-weight: 700;
 }
 
-/* ================= PLAYER STANDINGS (ISOLATED) ================= */
-
-.player-standings .standings-grid {
-  grid-template-columns:
-    50px    /* Rank */
-    160px   /* Player */
-    180px   /* Team */
-    60px    /* P */
-    60px    /* W */
-    60px    /* L */
-    70px    /* Win% */
-    70px    /* SW */
-    70px    /* SL */
-    70px    /* SD */
-    90px    /* PW */
-    90px    /* PL */
-    90px    /* PD */
-    140px;  /* Form */
-}
-
-/* Top-3 highlight (player only) */
-.player-standings .rank-1 {
-  background: #fff7ed;
-}
-.player-standings .rank-2 {
-  background: #f8fafc;
-}
-.player-standings .rank-3 {
-  background: #fefce8;
-}
-
-/* Recent Form coloring */
+/* Form colors */
 .form-W {
   color: #16a34a;
   font-weight: 700;
   margin-right: 4px;
 }
+
 .form-L {
   color: #dc2626;
   font-weight: 700;
   margin-right: 4px;
 }
-
-/* ================= MOBILE ================= */
+/* ================= MOBILE RESPONSIVE ================= */
 @media (max-width: 768px) {
+
+  /* Reduce page padding */
   .content {
     padding: 12px;
   }
 
+  /* Filters stack vertically */
   .filters {
     flex-direction: column;
+    gap: 10px;
   }
 
-  .standings-grid {
-    min-width: 900px;
-    font-size: 12px;
+  /* Standings: allow horizontal scroll on mobile */
+  .standings-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
+
+  /* Slightly smaller text */
+  .standings-grid {
+    font-size: 12px;
+    min-width: 900px; /* IMPORTANT: prevents column collapse */
+  }
+
+  /* Reduce row height */
+  .standings-row,
+  .standings-header {
+    padding: 6px 0;
+  }
+
+  /* Reduce column gaps */
+  .standings-grid {
+    gap: 6px;
+  }
+
+  /* Player / Team name wrap better */
+  .standings-grid > div {
+    white-space: nowrap;
+  }
+}
+/* =====================================================
+   PLAYER STANDINGS (ISOLATED & SAFE)
+   ===================================================== */
+
+.player-standings .standings-wrapper {
+  overflow-x: auto;
+}
+
+.player-standings .standings-grid {
+  display: grid;
+  grid-template-columns:
+    50px    /* Rank */
+    160px   /* Player */
+    180px   /* Team */
+    60px    /* Played */
+    60px    /* Wins */
+    60px    /* Losses */
+    70px    /* Win % */
+    70px    /* Sets Won */
+    70px    /* Sets Lost */
+    70px    /* Set Diff */
+    90px    /* Points Won */
+    90px    /* Points Lost */
+    90px    /* Point Diff */
+    140px;  /* Recent Form */
+
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.player-standings .standings-header {
+  font-weight: 700;
+  font-size: 12px;
+  color: #94a3b8;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 8px 0;
+}
+
+.player-standings .standings-row {
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* ✅ Rank emphasis (safe) */
+.player-standings .standings-row.rank-1 {
+  background: #fff7ed;
+  font-weight: 700;
+}
+
+.player-standings .standings-row.rank-2 {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.player-standings .standings-row.rank-3 {
+  background: #fefce8;
+  font-weight: 700;
+}
+
+/* ✅ Recent Form coloring (ONLY here) */
+.player-standings .form-W {
+  color: #16a34a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.player-standings .form-L {
+  color: #dc2626;
+  font-weight: 700;
+  margin-right: 4px;
 }
