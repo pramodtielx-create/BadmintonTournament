@@ -1152,7 +1152,8 @@ function showPlayerStandings(showAll = false) {
 
   list.forEach((p, i) => {
     html += `
-      <div class="standings-grid standings-row">
+    /*  <div class="standings-grid standings-row">*/
+        <div class="standings-grid standings-row rank-${i + 1}">
         <div>${p.name}</div>
         <div>${i + 1}</div>
         <div>${p.played}</div>
@@ -1321,7 +1322,9 @@ function showPlayerStandings(showAll = false) {
 
   list.forEach((p, i) => {
     html += `
-      <div class="standings-grid standings-row">
+    /*  <div class="standings-grid standings-row">*/
+      <div class="standings-grid standings-row rank-${i + 1}">
+
         <div>${i + 1}</div>
         <div>${p.name}</div>
         <div>${p.team}</div>
