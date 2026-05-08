@@ -20,15 +20,19 @@ body {
 /* ================= LAYOUT ================= */
 .container {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
 }
 
-/* ================= SIDEBAR ================= */
+/* ================= SIDEBAR (CLICK SAFE) ================= */
 .sidebar {
   width: 200px;
   background: #0b132b;
   color: white;
   padding: 14px;
+
+  position: relative;     /* ✅ establish stacking context */
+  z-index: 10;            /* ✅ ALWAYS ABOVE CONTENT */
+  pointer-events: auto;   /* ✅ ensure clickable */
 }
 
 .sidebar h3 {
@@ -54,13 +58,17 @@ body {
   background: #2563eb;
 }
 
-/* ================= CONTENT (SAFE CENTERING) ================= */
+/* ================= CONTENT (CLICK SAFE) ================= */
 .content {
   flex: 1;
   padding: 24px 32px;
+
+  position: relative;
+  z-index: 1;             /* ✅ BELOW SIDEBAR */
+  pointer-events: auto;
 }
 
-/* ✅ Safe content rail — NO FLEX */
+/* Center content WITHOUT overlays */
 .content > * {
   max-width: 1200px;
   margin-left: auto;
@@ -112,6 +120,9 @@ body {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
   margin-top: 12px;
+
+  position: relative;
+  z-index: 1; /* ✅ prevents overlay bugs */
 }
 
 /* ================= FIXTURE HEADER ================= */
@@ -166,24 +177,16 @@ body {
 /* ================= STANDINGS ================= */
 .standings-wrapper {
   overflow-x: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .standings-grid {
   display: grid;
   grid-template-columns:
-    200px
-    50px
-    60px
-    60px
-    60px
-    80px
-    80px
-    100px
-    100px
-    80px
-    90px
-    90px
-    140px;
+    200px 50px 60px 60px 60px
+    80px 80px 100px 100px
+    80px 90px 90px 140px;
   gap: 8px;
   align-items: center;
   font-size: 13.5px;
@@ -210,20 +213,54 @@ body {
 /* ================= PLAYER STANDINGS ================= */
 .player-standings .standings-grid {
   grid-template-columns:
-    50px
-    160px
-    180px
-    60px
-    60px
-    60px
-    70px
-    70px
-    70px
-    70px
-    90px
-    90px
-    90px
-    140px;
+    50px 160px 180px 60px 60px 60px
+    70px 70px 70px 70px
+    90px 90px 90px 140px;
 }
 
 .player-standings .rank-1 { background: #fff7ed; }
+.player-standings .rank-2 { background: #f8fafc; }
+.player-standings .rank-3 { background: #fefce8; }
+
+/* ================= FORM COLORS ================= */
+.form-W {
+  color: #16a34a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+.form-L {
+  color: #dc2626;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+/* ================= DROPDOWNS ================= */
+.content select {
+  appearance: none;
+  width: 280px;
+  max-width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+  .content {
+    padding: 12px;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .standings-grid {
+    min-width: 900px;
+    font-size: 12px;
+  }
+}
