@@ -23,7 +23,7 @@ body {
   min-height: 100vh;
 }
 
-/* ===== SIDEBAR (PRO SPORTS STYLE) ===== */
+/* ================= SIDEBAR ================= */
 .sidebar {
   width: 200px;
   background: #0b132b;
@@ -54,17 +54,17 @@ body {
   background: #2563eb;
 }
 
-/* ===== MAIN CONTENT RAIL ===== */
+/* ================= CONTENT (SAFE CENTERING) ================= */
 .content {
   flex: 1;
   padding: 24px 32px;
-  display: flex;
-  justify-content: center;
 }
 
+/* ✅ Safe content rail — NO FLEX */
 .content > * {
-  width: 100%;
-  max-width: 1200px; /* KEY FIX */
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ================= PAGE HEADERS ================= */
@@ -114,7 +114,7 @@ body {
   margin-top: 12px;
 }
 
-/* ================= FIXTURE HEADERS ================= */
+/* ================= FIXTURE HEADER ================= */
 .fixture-header {
   font-weight: 700;
   margin-bottom: 12px;
@@ -125,7 +125,7 @@ body {
   font-weight: 700;
 }
 
-/* ================= FIXTURE / RESULT ROW ================= */
+/* ================= MATCH ROW ================= */
 .result-row {
   display: grid;
   grid-template-columns: 40px 1fr 32px 1fr 110px;
@@ -163,7 +163,7 @@ body {
   font-weight: 700;
 }
 
-/* ================= STANDINGS (TEAM) ================= */
+/* ================= STANDINGS ================= */
 .standings-wrapper {
   overflow-x: auto;
 }
@@ -184,7 +184,6 @@ body {
     90px
     90px
     140px;
-
   gap: 8px;
   align-items: center;
   font-size: 13.5px;
@@ -208,7 +207,7 @@ body {
   font-weight: 700;
 }
 
-/* ================= PLAYER STANDINGS (ISOLATED) ================= */
+/* ================= PLAYER STANDINGS ================= */
 .player-standings .standings-grid {
   grid-template-columns:
     50px
@@ -223,3 +222,8 @@ body {
     70px
     90px
     90px
+    90px
+    140px;
+}
+
+.player-standings .rank-1 { background: #fff7ed; }
