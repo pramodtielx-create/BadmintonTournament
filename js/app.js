@@ -402,3 +402,58 @@ function showPlayerProfile(playerName) {
     <button style="margin-top:16px" onclick="showPlayerStandings()">⬅ Back to Player Standings</button>
   `;
 }
+<section class="team-squads">
+  <h2>🎽 Team Squads</h2>
+
+  <div class="squads-grid">
+
+    <div class="team-card">
+      <div class="team-header smash">Smash Titans</div>
+      <ul class="player-list">
+        <li>Omkar</li>
+        <li>Nishit</li>
+        <li>Ganesh</li>
+        <li>Sandeep W</li>
+        <li>Amit</li>
+        <li>Jayant</li>
+      </ul>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header quantum">Quantum Force</div>
+      <ul class="player-list">
+        <li>Rajendra</li>
+        <li>Aniket</li>
+        <li>Deepak L</li>
+        <li>Rahul</li>
+        <li>Manmohan</li>
+        <li>Prashant</li>
+      </ul>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header racket">Racket Scientists</div>
+      <ul class="player-list">
+        <li>Kiran</li>
+        <li>Kaustubh</li>
+        <li>Piyush</li>
+        <li>Pradyum</li>
+        <li>Amol S</li>
+        <li>Amol P</li>
+      </ul>
+    </div>
+
+    <div class="team-card">
+      <div class="team-header net">Net Ninjas</div>
+      <ul class="player-list">
+        <li>Jaswanth</li>
+        <li>Sandeepk</li>
+        <li>Ritesh</li>
+        <li>Vikram</li>
+        <li>Pramod</li>
+        <li>Deepak T</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
