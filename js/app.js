@@ -402,58 +402,57 @@ function showPlayerProfile(playerName) {
     <button style="margin-top:16px" onclick="showPlayerStandings()">⬅ Back to Player Standings</button>
   `;
 }
-<section class="team-squads">
-  <h2>🎽 Team Squads</h2>
 
-  <div class="squads-grid">
+/* ================= TEAM SQUADS ================= */
+/*************************************************
+ * TEAM SQUADS VIEW
+ *************************************************/
+function showTeamSquads() {
+  const c = document.getElementById("main-content");
 
-    <div class="team-card">
-      <div class="team-header smash">Smash Titans</div>
-      <ul class="player-list">
-        <li>Omkar</li>
-        <li>Nishit</li>
-        <li>Ganesh</li>
-        <li>Sandeep W</li>
-        <li>Amit</li>
-        <li>Jayant</li>
-      </ul>
+  const teams = buildTeamSquads();
+
+  c.innerHTML = `
+    <h2>🎽 Team Squads</h2>
+
+    <div class="squads-grid">
+      ${Object.entries(teams)
+        .map(
+          ([teamName, players]) => `
+          <div class="team-card">
+            <div class="team-header">${teamName}</div>
+            <ul class="player-list">
+              ${players.map(p => `<li>${p}</li>`).join("")}
+            </ul>
+          </div>
+        `
+        )
+        .join("")}
     </div>
+  `;
+}
 
-    <div class="team-card">
-      <div class="team-header quantum">Quantum Force</div>
-      <ul class="player-list">
-        <li>Rajendra</li>
-        <li>Aniket</li>
-        <li>Deepak L</li>
-        <li>Rahul</li>
-        <li>Manmohan</li>
-        <li>Prashant</li>
-      </ul>
-    </div>
+/*************************************************
+ * BUILD TEAM → PLAYERS MAP
+ *************************************************/
+function buildTeamSquads() {
+  const teams = {};
 
-    <div class="team-card">
-      <div class="team-header racket">Racket Scientists</div>
-      <ul class="player-list">
-        <li>Kiran</li>
-        <li>Kaustubh</li>
-        <li>Piyush</li>
-        <li>Pradyum</li>
-        <li>Amol S</li>
-        <li>Amol P</li>
-      </ul>
-    </div>
+  dataCache.fixtures.forEach(f => {
+    if (!teams[f.team_a]) teams[f.team_a] = new Set();
+    if (!teams[f.team_b]) teams[f.team_b] = new Set();
 
-    <div class="team-card">
-      <div class="team-header net">Net Ninjas</div>
-      <ul class="player-list">
-        <li>Jaswanth</li>
-        <li>Sandeepk</li>
-        <li>Ritesh</li>
-        <li>Vikram</li>
-        <li>Pramod</li>
-        <li>Deepak T</li>
-      </ul>
-    </div>
+    f.matches.forEach(pair => {
+      pair[0].split("/").forEach(p => teams[f.team_a].add(p.trim()));
+      pair[1].split("/").forEach(p => teams[f.team_b].add(p.trim()));
+    });
+  });
 
-  </div>
-</section>
+  // Convert sets to sorted arrays
+  Object.keys(teams).forEach(t => {
+    teams[t] = [...teams[t]].sort();
+  });
+
+  return teams;
+}
+
