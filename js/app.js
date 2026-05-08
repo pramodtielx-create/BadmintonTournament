@@ -316,6 +316,9 @@ function renderForm(form) {
 /*************************************************
  * PLAYER PROFILE PAGE
  *************************************************/
+/*************************************************
+ * PLAYER PROFILE PAGE (ENHANCED)
+ *************************************************/
 function showPlayerProfile(playerName) {
   const c = document.getElementById("main-content");
 
@@ -323,11 +326,14 @@ function showPlayerProfile(playerName) {
   const player = players.find(p => p.name === playerName);
 
   if (!player) {
-    c.innerHTML = `<h2>Player not found</h2>`;
+    c.innerHTML = "<h2>Player not found</h2>";
     return;
   }
 
-  // Player match history
+  const rank = players.indexOf(player) + 1;
+  const photo = PLAYER_PHOTOS[player.name] || DEFAULT_PLAYER_PHOTO;
+
+  /******** MATCH HISTORY ********/
   const matchHistory = [];
 
   dataCache.fixtures.forEach(f => {
@@ -343,61 +349,71 @@ function showPlayerProfile(playerName) {
       const score = m.sets.map(s => `${s[0]}-${s[1]}`).join(" | ");
 
       matchHistory.push({
-        opponent:
-          pair[0].includes(playerName) ? pair[1] : pair[0],
-        teamA: f.team_a,
-        teamB: f.team_b,
+        opponent: pair[0].includes(playerName) ? pair[1] : pair[0],
+        teams: `${f.team_a} vs ${f.team_b}`,
         score
       });
     });
   });
 
+  /******** RENDER ********/
   c.innerHTML = `
-    <h2>👤 ${player.name}</h2>
-    <p style="opacity:.7">Team: <strong>${player.team}</strong></p>
+    <div class="player-profile">
 
-    <div class="summary">
-      Rank: ${players.indexOf(player) + 1} |
-      Played: ${player.played} |
-      Wins: ${player.wins} |
-      Losses: ${player.losses} |
-      Win%: ${player.winPct}
+      <div class="player-profile-header">
+        <img src="${photo}" class="player-photo"
+             onerror="this.src='${DEFAULT_PLAYER_PHOTO}'">
+
+        <div class="player-info">
+          <h2>${player.name}</h2>
+          <p>Team: <strong>${player.team}</strong></p>
+          <p>Rank: ${rank}</p>
+        </div>
+      </div>
+
+      <div class="summary">
+        Played: ${player.played} |
+        Wins: ${player.wins} |
+        Losses: ${player.losses} |
+        Win%: ${player.winPct}
+      </div>
+
+      <div class="summary">
+        Sets: ${player.setsWon} - ${player.setsLost} (Diff ${player.setDiff}) |
+        Points: ${player.pointsWon} - ${player.pointsLost} (Diff ${player.pointDiff})
+      </div>
+
+      <div class="summary">
+        Recent Form: ${renderForm(player.recentForm.replace(/ /g, ""))}
+      </div>
+
+      <h3 style="margin-top:24px">Match History</h3>
+
+      <div class="fixture-card">
+        ${
+          matchHistory.length === 0
+            ? "<p>No completed matches</p>"
+            : matchHistory.map(m => `
+                <div class="result-row">
+                  <div>vs</div>
+                  <div>${m.opponent}</div>
+                  <div></div>
+                  <div>${m.teams}</div>
+                  <div>${m.score}</div>
+                </div>
+              `).join("")
+        }
+      </div>
+
+      <button class="back-btn" onclick="showPlayerStandings()">
+        ⬅ Back to Player Standings
+      </button>
+
     </div>
-
-    <div class="summary">
-      Sets: ${player.setsWon} - ${player.setsLost} (Diff ${player.setDiff}) |
-      Points: ${player.pointsWon} - ${player.pointsLost} (Diff ${player.pointDiff})
-    </div>
-
-    <div class="summary">
-      Recent Form: ${renderForm(player.recentForm.replace(/ /g, ""))}
-    </div>
-
-    <h3 style="margin-top:24px">Match History</h3>
-
-    <div class="fixture-card">
-      ${
-        matchHistory.length === 0
-          ? "<p>No completed matches</p>"
-          : matchHistory
-              .map(
-                m => `
-          <div class="result-row">
-            <div>vs</div>
-            <div>${m.opponent}</div>
-            <div></div>
-            <div>${m.teamA} vs ${m.teamB}</div>
-            <div>${m.score}</div>
-          </div>
-        `
-              )
-              .join("")
-      }
-    </div>
-
-    <button style="margin-top:16px" onclick="showPlayerStandings()">⬅ Back to Player Standings</button>
   `;
 }
+
+
 
 /* ================= TEAM SQUADS ================= */
 /*************************************************
