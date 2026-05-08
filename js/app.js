@@ -1,27 +1,129 @@
-const API_URL ="https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
+/*************************************************
+ * CONFIG
+ *************************************************/
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbwqdLGb2vz7ZiMbdBtJLOqQG0ou-zud5TFWIatJCotA8MULgst_1iXQ1f3M8FXF9TFm4w/exec";
 
 let dataCache = null;
 
-/* INIT */
+/*************************************************
+ * INIT
+ *************************************************/
 async function init() {
   const res = await fetch(API_URL);
   dataCache = await res.json();
-  showFixtures();
+  showDashboard();
 }
-
 init();
 
+/*************************************************
+ * DASHBOARD
+ *************************************************/
+function showDashboard() {
+  const c = document.getElementById("main-content");
 
-/* ========== PLAYER STANDINGS ========== */
+  const teams = computeTeamStandings();
+  const players = computeIndividualPlayerStandings();
+
+  c.innerHTML = `
+    <h2>Dashboard</h2>
+
+    <div class="summary">League Leader: ${teams[0]?.name || "-"}</div>
+    <div class="summary">Top Player: ${players[0]?.name || "-"}</div>
+    <div class="summary">
+      Teams: ${teams.length} | Players: ${players.length}
+    </div>
+  `;
+}
+
+/*************************************************
+ * FIXTURES
+ *************************************************/
+function showFixtures() {
+  const c = document.getElementById("main-content");
+
+  c.innerHTML = `
+    <h2>Fixtures & Results</h2>
+    <div class="fixtures-grid" id="fixtures-grid"></div>
+  `;
+
+  renderFixtures();
+}
+
+function renderFixtures() {
+  const grid = document.getElementById("fixtures-grid");
+  grid.innerHTML = "";
+
+  dataCache.fixtures.forEach(f => {
+    const card = document.createElement("div");
+    card.className = "fixture-card";
+
+    card.innerHTML = `
+      <div class="fixture-header">
+        ${f.team_a} <span class="vs">vs</span> ${f.team_b}
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+/*************************************************
+ * TEAM STANDINGS
+ *************************************************/
+function showStandings() {
+  const standings = computeTeamStandings();
+  const c = document.getElementById("main-content");
+
+  let html = `
+    <h2>Team Standings</h2>
+    <div class="fixture-card standings-wrapper">
+      <div class="standings-grid standings-header">
+        <div>Team</div><div>R</div><div>P</div><div>W</div><div>L</div>
+        <div>SW</div><div>SL</div><div>PW</div><div>PL</div>
+        <div>SD</div><div>PD</div><div>Pts</div><div>Form</div>
+      </div>
+  `;
+
+  standings.forEach((t, i) => {
+    html += `
+      <div class="standings-grid standings-row ${i < 2 ? "qualifier" : ""}">
+        <div>${t.name}</div>
+        <div>${i + 1}</div>
+        <div>${t.played}</div>
+        <div>${t.wins}</div>
+        <div>${t.losses}</div>
+        <div>${t.setsWon}</div>
+        <div>${t.setsLost}</div>
+        <div>${t.pointsWon}</div>
+        <div>${t.pointsLost}</div>
+        <div>${t.setDiff}</div>
+        <div>${t.pointDiff}</div>
+        <div>${t.leaguePoints}</div>
+        <div>${renderForm(t.form)}</div>
+      </div>
+    `;
+  });
+
+  c.innerHTML = html + `</div>`;
+}
+
+/*************************************************
+ * PLAYER STANDINGS
+ *************************************************/
 function showPlayerStandings(showAll = false) {
   const players = computeIndividualPlayerStandings();
   const list = showAll ? players : players.slice(0, 10);
   const c = document.getElementById("main-content");
 
   let html = `
-    <h2>👤 Player Standings</h2>
-    <label><input type="checkbox" ${showAll ? "checked" : ""}
-      onchange="showPlayerStandings(this.checked)"> Show All Players</label>
+    <h2>Player Standings</h2>
+
+    <label>
+      <input type="checkbox" ${showAll ? "checked" : ""}
+        onchange="showPlayerStandings(this.checked)">
+      Show All Players
+    </label>
 
     <div class="fixture-card standings-wrapper">
       <div class="standings-grid standings-header">
@@ -55,72 +157,61 @@ function showPlayerStandings(showAll = false) {
   c.innerHTML = `<div class="player-standings">${html}</div>`;
 }
 
-/* ========== HELPERS ========== */
+/*************************************************
+ * TEAM & PLAYER TRACKERS (PLACEHOLDERS)
+ *************************************************/
+function renderTeamView() {
+  document.getElementById("main-content").innerHTML =
+    "<h2>Team Match Tracker (coming next)</h2>";
+}
+
+function renderPlayerView() {
+  document.getElementById("main-content").innerHTML =
+    "<h2>Player Match Tracker (coming next)</h2>";
+}
+
+/*************************************************
+ * COMPUTATION HELPERS
+ *************************************************/
+function computeTeamStandings() {
+  const teams = {};
+
+  dataCache.fixtures.forEach(f => {
+    teams[f.team_a] ??= initTeam(f.team_a);
+    teams[f.team_b] ??= initTeam(f.team_b);
+  });
+
+  return Object.values(teams);
+}
+
+function initTeam(name) {
+  return {
+    name,
+    played: 0,
+    wins: 0,
+    losses: 0,
+    setsWon: 0,
+    setsLost: 0,
+    pointsWon: 0,
+    pointsLost: 0,
+    setDiff: 0,
+    pointDiff: 0,
+    leaguePoints: 0,
+    form: ""
+  };
+}
+
+function computeIndividualPlayerStandings() {
+  return [];
+}
+
 function renderForm(form) {
-  return form.split("").map(c =>
-    c === "W" ? `<span class="form-W">W</span>` :
-    c === "L" ? `<span class="form-L">L</span>` : ""
-  ).join("");
+  return form
+    .split("")
+    .map(c =>
+      c === "W"
+        ? `<span class="form-W">W</span>`
+        : `<span class="form-L">L</span>`
+    )
+    .join("");
 }
-
-/* ========= COMPUTATION FUNCTIONS (already validated) ========= */
-/* computeTeamStandings() */
-/* computeIndividualPlayerStandings() */
-/* renderTeamView(), renderPlayerView() */
-/* — keep your existing logic here unchanged — */
-
-
-
-
-/* INIT */
-async function init() {
-  const res = await fetch(API_URL);
-  dataCache = await res.json();
-  showDashboard();
-}
-init();
-
-/* ========== DASHBOARD HOME ========== */
-function showDashboard() {
-  const c = document.getElementById("main-content");
-
-  const teams = computeTeamStandings();
-  const players = computeIndividualPlayerStandings();
-
-  c.innerHTML = `
-    <h2>🏠 Dashboard</h2>
-
-    <div class="summary">🏆 League Leader: ${teams[0]?.name}</div>
-    <div class="summary">🔥 Top Player: ${players[0]?.name} (${players[0]?.recentForm})</div>
-    <div class="summary">📊 Teams: ${teams.length} | Players: ${players.length}</div>
-  `;
-}
-
-/* ========== TEAM STANDINGS ========== */
-function showStandings() {
-  const standings = computeTeamStandings();
-  const c = document.getElementById("main-content");
-
-  let html = `
-    <h2>🏆 Team Standings</h2>
-    <div class="fixture-card standings-wrapper">
-      <div class="standings-grid standings-header">
-        <div>Team</div><div>R</div><div>P</div><div>W</div><div>L</div>
-        <div>SW</div><div>SL</div><div>PW</div><div>PL</div>
-        <div>SD</div><div>PD</div><div>Pts</div><div>Form</div>
-      </div>
-  `;
-
-  standings.forEach((t, i) => {
-    html += `
-      <div class="standings-grid standings-row ${i < 2 ? "qualifier" : ""}">
-        <div>${t.name}</div>
-        <div>${i + 1}</div>
-        <div>${t.played}</div>
-        <div>${t.wins}</div>
-        <div>${t.losses}</div>
-        <div>${t.setsWon}</div>
-        <div>${t.setsLost}</div>
-        <div>${t.pointsWon}</div>
-        <div>${t.pointsLost}</div>
-        <div>${t.setDiff}</div>
