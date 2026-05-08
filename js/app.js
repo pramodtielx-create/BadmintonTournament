@@ -137,7 +137,10 @@ function showPlayerStandings(showAll = false) {
     html += `
       <div class="standings-grid standings-row rank-${i + 1}">
         <div>${i + 1}</div>
-        <div>${p.name}</div>
+        <div style="cursor:pointer;color:#2563eb;font-weight:700"
+     onclick="showPlayerProfile('${p.name}')">
+  ${p.name}
+</div>
         <div>${p.team}</div>
         <div>${p.played}</div>
         <div>${p.wins}</div>
