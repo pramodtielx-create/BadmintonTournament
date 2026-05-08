@@ -71,7 +71,6 @@ function renderForm(form) {
 
 
 
-let dataCache = null;
 
 /* INIT */
 async function init() {
