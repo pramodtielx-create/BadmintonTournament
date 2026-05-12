@@ -1,8 +1,12 @@
-/* =====================================================/* ================================================= AUCTION MODULE
-   Safe: Virtual credits only (no real money)
-   ===================================================== */
+/* ======================================================
+   FANTASY AUCTION MODULE
+   ✅ Virtual credits only
+   ✅ Backend-compatible
+   ✅ WebSocket-ready
+   ✅ Fully separated from app.js
+   ====================================================== */
 
-/* ------------------ STATE ------------------ */
+/* ===================== STATE ===================== */
 
 const AuctionStore = {
   currentUser: null,
@@ -10,14 +14,23 @@ const AuctionStore = {
   socket: null
 };
 
-/* ------------------ INIT ------------------ */
+/* ===================== INIT ===================== */
+/*
+  Call once from app.js:
+  initAuction({
+    id: "u1",
+    name: "Rahul",
+    credits: 390,
+    premium: true
+  });
+*/
 
 function initAuction(user) {
   AuctionStore.currentUser = user;
   connectAuctionSocket();
 }
 
-/* ------------------ SOCKET ------------------ */
+/* ===================== SOCKET ===================== */
 
 function connectAuctionSocket() {
   if (typeof io === "undefined") return;
@@ -29,31 +42,43 @@ function connectAuctionSocket() {
     renderAuctionUI();
   });
 
-  AuctionStore.socket.on("AUCTION_CLOSED", result => {
-    alert(`Auction closed. Winner: ${result.winnerName}`);
+  AuctionStore.socket.on("AUCTION_CLOSED", payload => {
+    alert(`Auction closed. Winner: ${payload.winnerName}`);
     loadCurrentAuction();
   });
 }
 
-/* ------------------ API CALLS ------------------ */
+/* ===================== API ===================== */
 
 function loadCurrentAuction() {
   fetch("/api/auction/current")
-    .then(res => res.json())
-    .then(data => {
-      AuctionStore.auction = data;
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to load auction");
+      return res.json();
+    })
+    .then(auction => {
+      AuctionStore.auction = auction;
       renderAuctionUI();
     })
-    .catch(console.error);
+    .catch(err => {
+      document.getElementById("auction-container").innerHTML =
+        `<p style="opacity:.7">Auction unavailable</p>`;
+      console.error(err);
+    });
 }
 
-function placeAuctionBid(increment) {
+function submitAuctionBid(increment) {
   const user = AuctionStore.currentUser;
   const auction = AuctionStore.auction;
 
-  const newBid = auction.highestBid + increment;
+  if (!auction || auction.status !== "OPEN") {
+    alert("Auction not active");
+    return;
+  }
 
-  if (user.credits < newBid) {
+  const bidAmount = auction.highestBid + increment;
+
+  if (user.credits < bidAmount) {
     alert("Insufficient credits");
     return;
   }
@@ -63,90 +88,10 @@ function placeAuctionBid(increment) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       userId: user.id,
-      amount: newBid
+      amount: bidAmount
     })
   })
-  .then(res => {
-    if (!res.ok) throw new Error("Bid failed");
-    return res.json();
-  })
-  .then(updatedAuction => {
-    AuctionStore.auction = updatedAuction;
-    renderAuctionUI();
-  })
-  .catch(err => alert(err.message));
-}
-
-/* ------------------ UI RENDER ------------------ */
-
-function showFantasyAuction() {
-  document.getElementById("main-content").innerHTML = `
-    <div class="auction-page">
-      <div class="auction-header">
-        <h2>Fantasy Player Auction</h2>
-        <div>
-          Credits:
-          <strong>${AuctionStore.currentUser.credits}</strong>
-        </div>
-      </div>
-
-      <div id="auction-container"></div>
-
-      <p class="disclaimer">
-        Virtual credits only. No real money or prizes involved.
-      </p>
-    </div>
-  `;
-
-  loadCurrentAuction();
-}
-
-function renderAuctionUI() {
-  const a = AuctionStore.auction;
-  if (!a) return;
-
-  document.getElementById("auction-container").innerHTML = `
-    <div class="auction-card">
-      <div class="player-block">
-        <img src="${a.player.photo}">
-        <div class="player-meta">
-          <h3>${a.player.name}</h3>
-          <p>${a.player.team}</p>
-          <p>Base Price: ${a.player.basePrice}</p>
-        </div>
-      </div>
-
-      <div class="auction-stats">
-        <div>
-          <span>Highest Bid</span>
-          <strong>${a.highestBid}</strong>
-        </div>
-        <div>
-          <span>Leader</span>
-          <strong>${a.highestBidderName}</strong>
-        </div>
-        <div>
-          <span>Ends In</span>
-          <strong class="timer">${a.secondsLeft}s</strong>
-        </div>
-      </div>
-
-      <div class="bid-actions">
-        <button onclick="placeAuctionBid(10)">+10</button>
-        <button onclick="placeAuctionBid(20)">+20</button>
-        <button onclick="placeAuctionBid(50)">+50</button>
-      </div>
-
-      <button class="place-bid"
-        onclick="placeAuctionBid(0)">
-        Place Bid
-      </button>
-    </div>
-  `;
-}
-
-/* ------------------ EXPORTS ------------------ */
-
-window.showFantasyAuction = showFantasyAuction;
-window.initAuction = initAuction;
-``
+    .then(res => {
+      if (!res.ok) throw new Error("Bid rejected");
+      return res.json();
+    })
