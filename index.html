@@ -4,15 +4,121 @@
   <meta charset="UTF-8" />
   <title>Badminton Tournament Intelligence</title>
 
-  <!-- ✅ CORRECT CSS LINK -->
+  <!-- ✅ CSS -->
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- ✅ FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== AUCTION UI (SAFE TO MOVE TO style.css) ========== */
+
+    .auction-page {
+      max-width: 760px;
+      margin: auto;
+    }
+
+    .auction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .auction-card {
+      background: #0b1220;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
+    }
+
+    .player-block {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .player-block img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #1a73e8;
+    }
+
+    .player-meta h3 {
+      margin: 0;
+      color: #e8eaed;
+    }
+
+    .player-meta p {
+      margin: 2px 0;
+      color: #bdc1c6;
+      font-size: 14px;
+    }
+
+    .auction-stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 16px 0;
+    }
+
+    .auction-stats span {
+      display: block;
+      font-size: 12px;
+      color: #9aa0a6;
+    }
+
+    .auction-stats strong {
+      font-size: 16px;
+      color: #e8eaed;
+    }
+
+    .timer {
+      color: #fbbc04;
+    }
+
+    .bid-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .bid-actions button {
+      flex: 1;
+      height: 44px;
+      background: #121a2f;
+      border: none;
+      color: #e8eaed;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .place-bid {
+      margin-top: 12px;
+      width: 100%;
+      height: 48px;
+      background: #1a73e8;
+      border: none;
+      color: white;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .disclaimer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #9aa0a6;
+    }
+  </style>
 </head>
+
 <body>
 
-  <!-- ✅ SINGLE HEADER -->
+  <!-- ✅ HEADER -->
   <header class="header">
     <h1>🏸 Badminton Tournament Dashboard</h1>
   </header>
@@ -30,9 +136,11 @@
       <button onclick="renderTeamView()">Team Match Tracker</button>
       <button onclick="renderPlayerView()">Player Match Tracker</button>
 
+      <!-- ✅ NEW FEATURE -->
+      <button onclick="showFantasyAuction()">🏆 Fantasy Auction</button>
+
       <hr style="margin:16px 0;opacity:.3">
 
-      <!-- ✅ DARK MODE TOGGLE (BEST PLACE) -->
       <button onclick="toggleDarkMode()" class="dark-toggle">
         🌙 Dark Mode
       </button>
@@ -46,6 +154,70 @@
   <!-- ✅ JS -->
   <script src="js/app.js"></script>
 
-</body>
+  <!-- ✅ AUCTION LOGIC (DEMO / BACKEND‑READY) -->
+  <script>
+    let userCredits = 520;
+    let highestBid = 130;
 
+    function showFantasyAuction() {
+      document.getElementById("main-content").innerHTML = `
+        <div class="auction-page">
+          <div class="auction-header">
+            <h2>Fantasy Player Auction</h2>
+            <div>Credits: <strong id="credits">${userCredits}</strong></div>
+          </div>
+
+          <div class="auction-card">
+            <div class="player-block">
+              <img src="assets/players/pradyum.png" alt="Player        </div>
+
+            <div class="auction-stats">
+              <div>
+                <span>Highest Bid</span>
+                <strong id="highestBid">${highestBid}</strong>
+              </div>
+              <div>
+                <span>Leader</span>
+                <strong>Omkar</strong>
+              </div>
+              <div>
+                <span>Ends In</span>
+                <strong class="timer" id="timer">20s</strong>
+              </div>
+            </div>
+
+            <div class="bid-actions">
+              <button onclick="addBid(10)">+10</button>
+              <button onclick="addBid(20)">+20</button>
+              <button onclick="addBid(50)">+50</button>
+            </div>
+
+            <button class="place-bid" onclick="placeBid()">Place Bid</button>
+
+            <div class="disclaimer">
+              This fantasy feature uses virtual credits only.  
+              No real money or prizes involved.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addBid(amount) {
+      highestBid += amount;
+      document.getElementById("highestBid").innerText = highestBid;
+    }
+
+    function placeBid() {
+      if (userCredits < highestBid) {
+        alert("Insufficient credits");
+        return;
+      }
+      userCredits -= highestBid;
+      alert("Bid placed successfully!");
+      showFantasyAuction();
+    }
+  </script>
+
+</body>
 </html>
