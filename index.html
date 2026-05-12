@@ -2,33 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Badminton Tournament Intelligence</title>
-  <link rel="stylesheet" href="css/style.css?v=1.0.0">
+
+  <!-- ✅ CORRECT CSS LINK -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<header class="header">
-  <h1>🏸 Badminton Tournament Dashboard</h1>
-</header>
+  <!-- ✅ SINGLE HEADER -->
+  <header class="header">
+    <h1>🏸 Badminton Tournament Dashboard</h1>
+  </header>
 
-<div class="container">
-  <aside class="sidebar">
-    <h3>MENU</h3>
-    <button onclick="showDashboard()">Dashboard</button>
-    <button onclick="showFixtures()">Fixtures & Results</button>
-    <button onclick="showStandings()">Team Standings</button>
-    <button onclick="showPlayerStandings()">Player Standings</button>
-    <button onclick="renderTeamView()">Team Match Tracker</button>
-    <button onclick="renderPlayerView()">Player Match Tracker</button>
-    <button onclick="showTeamSquads()">Teams</button>
-  </aside>
+  <div class="container">
 
-  <main id="main-content" class="content"></main>
-</div>
+    <!-- ✅ SIDEBAR -->
+    <aside class="sidebar">
+      <h3>MENU</h3>
 
+      <button onclick="showTeamSquads()">Team Squads</button>
+      <button onclick="showFixtures()">Fixtures & Results</button>
+      <button onclick="showTeamStandings()">Team Standings</button>
+      <button onclick="showPlayerStandings()">Player Standings</button>
+      <button onclick="renderTeamView()">Team Match Tracker</button>
+      <button onclick="renderPlayerView()">Player Match Tracker</button>
 
- 
-<script src="js/app.js?v=1.0.0"></script>
+      <hr style="margin:16px 0;opacity:.3">
+
+      <!-- ✅ DARK MODE TOGGLE (BEST PLACE) -->
+      <button onclick="toggleDarkMode()" class="dark-toggle">
+        🌙 Dark Mode
+      </button>
+    </aside>
+
+    <!-- ✅ MAIN CONTENT -->
+    <main id="main-content" class="content"></main>
+
+  </div>
+
+  <!-- ✅ JS -->
+  <script src="js/app.js"></script>
+
 </body>
+
 </html>
